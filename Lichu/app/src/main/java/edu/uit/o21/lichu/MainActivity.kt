@@ -9,17 +9,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import edu.uit.o21.lichu.ui.theme.LichuTheme
@@ -50,35 +55,57 @@ val category3Colors = CategoryColors(Color(0xFFA6B3FA), Color(0xFFD7DEFF))
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Category("Category 1", category1Colors) {
-            Note("Note 1.1", "Due Date 1.1", category1Colors)
-            Note("Note 1.2", "Due Date 1.2", category1Colors)
-            Note("Note 1.3", "Due Date 1.3", category1Colors)
-        }
-        Category("Category 2", category2Colors) {
-            Note("Note 2.1", "Due Date 2.1", color = category2Colors)
-            Note("Note 2.2", "Due Date 2.2", color = category2Colors)
-            Note("Note 2.3", "Due Date 2.3", color = category2Colors)
-        }
-        Category("Category 3", category3Colors) {
-            Note("Note 3.1", "Due Date 3.1", color = category3Colors)
-            Note("Note 3.2", "Due Date 3.2", color = category3Colors)
-        }
+    val selectedItem = remember { mutableIntStateOf(0) }
 
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = { /* Do something for Notes view */ }) {
-                Text("Notes")
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Category("Category 1", category1Colors) {
+                Note("Note 1.1", "Due Date 1.1", category1Colors)
+                Note("Note 1.2", "Due Date 1.2", category1Colors)
+                Note("Note 1.3", "Due Date 1.3", category1Colors)
             }
-            Button(onClick = { /* Do something for Calendar view */ }) {
-                Text("Calendar")
+            Category("Category 2", category2Colors) {
+                Note("Note 2.1", "Due Date 2.1", color = category2Colors)
+                Note("Note 2.2", "Due Date 2.2", color = category2Colors)
+                Note("Note 2.3", "Due Date 2.3", color = category2Colors)
+            }
+            Category("Category 3", category3Colors) {
+                Note("Note 3.1", "Due Date 3.1", color = category3Colors)
+                Note("Note 3.2", "Due Date 3.2", color = category3Colors)
             }
         }
+        BottomNavBar(selectedItem.intValue) { newIndex ->
+            selectedItem.intValue = newIndex
+            // Handle navigation here
+        }
+    }
+}
+
+@Composable
+fun BottomNavBar(
+    selectedItem: Int,
+    onItemClick: (Int) -> Unit
+) {
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+    ) {
+        NavigationBarItem(
+            icon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_view), contentDescription = "Notes") },
+            label = { Text("Notes") },
+            selected = selectedItem == 0,
+            onClick = { onItemClick(0) }
+        )
+        NavigationBarItem(
+            icon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_month), contentDescription = "Calendar") },
+            label = { Text("Calendar") },
+            selected = selectedItem == 1,
+            onClick = { onItemClick(1) }
+        )
     }
 }
 
@@ -112,9 +139,9 @@ fun Note(header: String, dueDate: String, color: CategoryColors) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground= true)
 @Composable
-fun GreetingPreview() {
+fun GreetingPreview(){
     LichuTheme {
         MainScreen()
     }
