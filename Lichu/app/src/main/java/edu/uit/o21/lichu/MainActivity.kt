@@ -3,6 +3,7 @@ package edu.uit.o21.lichu
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,22 +41,29 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+data class CategoryColors(val background: Color, val note: Color)
+
+val category1Colors = CategoryColors(Color(0xFFD8A6FA), Color(0xFFDCD7FF))
+val category2Colors = CategoryColors(Color(0xFFBBA6FA), Color(0xFFE0D7FF))
+val category3Colors = CategoryColors(Color(0xFFA6B3FA), Color(0xFFD7DEFF))
+
+
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
-        Category("Category 1") {
-            Note("Note 1.1", "Due Date 1.1")
-            Note("Note 1.2", "Due Date 1.2")
-            Note("Note 1.3", "Due Date 1.3")
+        Category("Category 1", category1Colors) {
+            Note("Note 1.1", "Due Date 1.1", category1Colors)
+            Note("Note 1.2", "Due Date 1.2", category1Colors)
+            Note("Note 1.3", "Due Date 1.3", category1Colors)
         }
-        Category("Category 2") {
-            Note("Note 2.1", "Due Date 2.1")
-            Note("Note 2.2", "Due Date 2.2")
-            Note("Note 2.3", "Due Date 2.3")
+        Category("Category 2", category2Colors) {
+            Note("Note 2.1", "Due Date 2.1", color = category2Colors)
+            Note("Note 2.2", "Due Date 2.2", color = category2Colors)
+            Note("Note 2.3", "Due Date 2.3", color = category2Colors)
         }
-        Category("Category 3") {
-            Note("Note 3.1", "Due Date 3.1")
-            Note("Note 3.2", "Due Date 3.2")
+        Category("Category 3", category3Colors) {
+            Note("Note 3.1", "Due Date 3.1", color = category3Colors)
+            Note("Note 3.2", "Due Date 3.2", color = category3Colors)
         }
 
         Row(
@@ -73,8 +83,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Category(header: String, notes: @Composable () -> Unit) {
-    Column(modifier = Modifier.padding(16.dp)) {
+fun Category(header: String, colors: CategoryColors, notes: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(colors.background)
+    ) {
         Text(header, style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
         notes()
@@ -82,8 +96,12 @@ fun Category(header: String, notes: @Composable () -> Unit) {
 }
 
 @Composable
-fun Note(header: String, dueDate: String) {
-    Column(modifier = Modifier.padding(8.dp)) {
+fun Note(header: String, dueDate: String, color: CategoryColors) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(color.note)
+    ) {
         Row {
             Text(header, style = MaterialTheme.typography.titleSmall)
             Spacer(modifier = Modifier.width(8.dp))
