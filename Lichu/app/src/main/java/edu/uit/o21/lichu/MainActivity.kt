@@ -13,16 +13,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,50 +62,66 @@ sealed class CategoryColors(val backgroundColor: Color, val noteColor: Color) {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen() {
     val selectedTabIndex = remember { mutableIntStateOf(0) }
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column{
-            Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 0.dp))
-            CategoryList()
+    val categories = remember { mutableStateListOf(*categoriesList.toTypedArray()) }
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(selectedTabIndex.intValue) { newIndex ->
+                selectedTabIndex.intValue = newIndex
+            }
         }
-        BottomNavBar(selectedTabIndex.intValue) { newIndex ->
-            selectedTabIndex.intValue = newIndex
-            // Handle navigation here
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(8.dp, 0.dp, 8.dp, 0.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Your Notes", fontSize = 32.sp)
+                Spacer(modifier = Modifier.width(32.dp))
+                AddCategoryButton{ newCategoryName ->
+                    categories.add(CategoryData(newCategoryName, CategoryColors.Category1, mutableListOf()))
+                }
+            }
+            CategoryList(categories)
         }
     }
 }
 
-data class CategoryData(val name: String, val colors: CategoryColors, val notes: List<NoteData>)
+data class CategoryData(val name: String, val colors: CategoryColors, val notes: MutableList<NoteData>)
 data class NoteData(val header: String, val dueDate: String)
 
-val categories = listOf(
-    CategoryData("School - Week 10", CategoryColors.Category1, listOf(
-        NoteData("Chemistry Test", "Tomorrow"),
-        NoteData("Science Fair", "In 5 days"),
-        NoteData("Homework", "Next month")
-    )),
-    CategoryData("Groceries", CategoryColors.Category2, listOf(
-        NoteData("Shampoo", ""),
-        NoteData("Batteries", ""),
-        NoteData("Cat food", "")
-    )),
-    CategoryData("Notes", CategoryColors.Category3, listOf(
-        NoteData("11/10", ""),
-        NoteData("Emergency Meeting", "15/12")
+val categoriesList = listOf(
+//    CategoryData("School - Week 10", CategoryColors.Category1, mutableListOf(
+//        NoteData("Chemistry Test", "Tomorrow"),
+//        NoteData("Science Test", "Tomorrow"),
+//        NoteData("English Test", "Tomorrow")
+//    )),
+//    CategoryData("Groceries", CategoryColors.Category2, mutableListOf(
+//        NoteData("Shampoo", ""),
+//        NoteData("Cat food", "")
+//    )),
+    CategoryData("Notes", CategoryColors.Category3, mutableListOf(
+//        NoteData("Emergency", "11/10"),
+//        NoteData("*Locked*", "")
     ))
 )
 
 @Composable
-fun CategoryList() {
+fun CategoryList(categories: MutableList<CategoryData>) {
     LazyColumn {
         items(categories) { category ->
             Category(category.name, category.colors) {
                 category.notes.forEach { note ->
                     Note(note.header, note.dueDate, category.colors)
+                }
+                AddNoteButton { newNoteHeader, newNoteDueDate ->
+                    category.notes.add(NoteData(newNoteHeader, newNoteDueDate))
                 }
             }
         }
@@ -195,6 +217,41 @@ fun Note(header: String, dueDate: String, colors: CategoryColors) {
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
+    }
+}
+
+@Composable
+fun AddCategoryButton(onAddCategory: (String) -> Unit) {
+    val newCategoryName by remember { mutableStateOf("") }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(1.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = {
+            onAddCategory(newCategoryName)
+        }) {
+            Text("Add Category")
+        }
+    }
+}
+
+@Composable
+fun AddNoteButton(onAddNote: (String, String) -> Unit) {
+    val newNoteHeader by remember { mutableStateOf("") }
+    val newNoteDueDate by remember { mutableStateOf("") }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(onClick = { onAddNote(newNoteHeader, newNoteDueDate) }) {
+            Text("Add Note")
+        }
     }
 }
 
