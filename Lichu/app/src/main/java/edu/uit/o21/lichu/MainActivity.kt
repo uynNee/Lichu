@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import edu.uit.o21.lichu.ui.theme.LichuTheme
 
 class MainActivity : ComponentActivity() {
@@ -58,7 +62,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        CategoryList()
+        Column{
+            Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 0.dp))
+            CategoryList()
+        }
         BottomNavBar(selectedTabIndex.intValue) { newIndex ->
             selectedTabIndex.intValue = newIndex
             // Handle navigation here
@@ -66,23 +73,35 @@ fun MainScreen(modifier: Modifier = Modifier) {
     }
 }
 
+data class CategoryData(val name: String, val colors: CategoryColors, val notes: List<NoteData>)
+data class NoteData(val header: String, val dueDate: String)
+
+val categories = listOf(
+    CategoryData("School - Week 10", CategoryColors.Category1, listOf(
+        NoteData("Chemistry Test", "Tomorrow"),
+        NoteData("Science Fair", "In 5 days"),
+        NoteData("Homework", "Next month")
+    )),
+    CategoryData("Groceries", CategoryColors.Category2, listOf(
+        NoteData("Shampoo", ""),
+        NoteData("Batteries", ""),
+        NoteData("Cat food", "")
+    )),
+    CategoryData("Notes", CategoryColors.Category3, listOf(
+        NoteData("11/10", ""),
+        NoteData("Emergency Meeting", "15/12")
+    ))
+)
+
 @Composable
 fun CategoryList() {
-    Column {
-        Text("Notes", style = MaterialTheme.typography.titleLarge)
-        Category("Category 1", CategoryColors.Category1) {
-            Note("Note 1.1", "Due Date 1.1", CategoryColors.Category1)
-            Note("Note 1.2", "Due Date 1.2", CategoryColors.Category1)
-            Note("Note 1.3", "Due Date 1.3", CategoryColors.Category1)
-        }
-        Category("Category 2", CategoryColors.Category2) {
-            Note("Note 2.1", "Due Date 2.1", CategoryColors.Category2)
-            Note("Note 2.2", "Due Date 2.2", CategoryColors.Category2)
-            Note("Note 2.3", "Due Date 2.3", CategoryColors.Category2)
-        }
-        Category("Category 3", CategoryColors.Category3) {
-            Note("Note 3.1", "Due Date 3.1", CategoryColors.Category3)
-            Note("Note 3.2", "Due Date 3.2", CategoryColors.Category3)
+    LazyColumn {
+        items(categories) { category ->
+            Category(category.name, category.colors) {
+                category.notes.forEach { note ->
+                    Note(note.header, note.dueDate, category.colors)
+                }
+            }
         }
     }
 }
@@ -97,14 +116,38 @@ fun BottomNavBar(
             .fillMaxWidth()
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_gallery), contentDescription = "Notes") },
-            label = { Text("Notes") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                    contentDescription = "Notes",
+                    modifier = Modifier.offset(0.dp, (-3).dp)
+                )
+            },
+            label = {
+                Text(
+                    "Notes",
+                    fontSize = 18.sp,
+                    modifier = Modifier.offset(y = 4.dp)
+                )
+            },
             selected = selectedTabIndex == 0,
             onClick = { onItemClick(0) }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_month), contentDescription = "Calendar") },
-            label = { Text("Calendar") },
+            icon = {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_month),
+                    contentDescription = "Calendar",
+                    modifier = Modifier.offset(0.dp, (-3).dp)
+                )
+            },
+            label = {
+                Text(
+                    "Calendar",
+                    fontSize = 18.sp,
+                    modifier = Modifier.offset(y = 4.dp)
+                )
+            },
             selected = selectedTabIndex == 1,
             onClick = { onItemClick(1) }
         )
@@ -115,12 +158,11 @@ fun BottomNavBar(
 fun Category(header: String, colors: CategoryColors, notes: @Composable () -> Unit) {
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(16.dp, 12.dp, 16.dp, 6.dp)
             .fillMaxWidth()
             .background(colors.backgroundColor)
     ) {
-        Text(header, style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(8.dp))
+        Text(header, fontSize = 24.sp, modifier = Modifier.padding(8.dp, 4.dp, 0.dp, 0.dp))
         notes()
     }
 }
@@ -141,12 +183,14 @@ fun Note(header: String, dueDate: String, colors: CategoryColors) {
         ) {
             Text(
                 header,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f).padding(start = 12.dp)
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp)
             )
             Text(
                 dueDate,
-                style = MaterialTheme.typography.bodySmall,
+                fontSize = 14.sp,
                 modifier = Modifier.padding(end = 8.dp)
             )
         }
