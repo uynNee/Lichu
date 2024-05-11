@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,10 +44,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LichuTheme(darkTheme = true) {
+            LichuTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     MainScreen()
                 }
@@ -136,31 +136,28 @@ fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) 
 
 @Composable
 fun TopBar() {
-    Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(8.dp, 2.dp))
+    Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(8.dp, 24.dp, 0.dp, 0.dp), color = MaterialTheme.colorScheme.onBackground)
 }
 
 @Composable
 fun BottomNavBar(
     selectedTabIndex: Int,
     onItemClick: (Int) -> Unit
-) {
+    ) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
+            .height(64.dp)
+            .clip(MaterialTheme.shapes.large),
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
     ) {
         NavigationBarItem(
             icon = {
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_menu_gallery),
                     contentDescription = "Notes",
-                    modifier = Modifier.offset(0.dp, (-3).dp)
-                )
-            },
-            label = {
-                Text(
-                    "Notes",
-                    fontSize = 18.sp,
-                    modifier = Modifier.offset(y = 8.dp)
+                    Modifier.padding(top = 6.dp)
                 )
             },
             selected = selectedTabIndex == 0,
@@ -171,14 +168,7 @@ fun BottomNavBar(
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_menu_month),
                     contentDescription = "Calendar",
-                    modifier = Modifier.offset(0.dp, (-3).dp)
-                )
-            },
-            label = {
-                Text(
-                    "Calendar",
-                    fontSize = 18.sp,
-                    modifier = Modifier.offset(y = 8.dp)
+                    Modifier.padding(top = 6.dp)
                 )
             },
             selected = selectedTabIndex == 1,
@@ -192,9 +182,11 @@ fun Category(header: String, notes: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .padding(12.dp, 8.dp, 12.dp, 6.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .fillMaxWidth()
     ) {
-        Text(header, fontSize = 24.sp, modifier = Modifier.padding(8.dp, 4.dp, 0.dp, 0.dp))
+        Text(header, fontSize = 24.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 0.dp), color = MaterialTheme.colorScheme.onSecondaryContainer)
         notes()
     }
 }
@@ -205,6 +197,8 @@ fun Note(header: String, dueDate: String, onClick: () -> Unit) {
         modifier = Modifier
             .padding(6.dp)
             .fillMaxWidth()
+            .clip(MaterialTheme.shapes.small)
+            .background( MaterialTheme.colorScheme.onSecondary)
             .clickable(onClick = onClick)
     ) {
         Spacer(modifier = Modifier.height(4.dp))
@@ -234,55 +228,67 @@ fun Note(header: String, dueDate: String, onClick: () -> Unit) {
 fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize().padding(0.dp, 64.dp)
             .animateContentSize()
     ) {
         Column(
             modifier = Modifier
                 .padding(12.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Text("Edit Note", fontSize = 28.sp)
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
                     contentDescription = "Close",
                     modifier = Modifier.clickable(onClick = onClose)
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             var header by remember { mutableStateOf(note.header) }
             TextField(
                 value = header,
                 onValueChange = { header = it; note.header = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                singleLine = false,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             var dueDate by remember { mutableStateOf(note.dueDate) }
             TextField(
                 value = dueDate,
                 onValueChange = { dueDate = it; note.dueDate = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                singleLine = true,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_menu_save),
-                contentDescription = "Confirm",
-                modifier = Modifier.clickable(onClick = onConfirm)
-            )
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_save),
+                    contentDescription = "Confirm",
+                    modifier = Modifier.clickable(onClick = onConfirm)
+                )
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false, showSystemUi = false)
 @Composable
 fun MainScreenPreview() {
-    LichuTheme {
+    LichuTheme(darkTheme = true) {
         MainScreen()
     }
 }
