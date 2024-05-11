@@ -3,7 +3,8 @@ package edu.uit.o21.lichu
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,10 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -24,15 +23,16 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LichuTheme {
+            LichuTheme(darkTheme = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -55,17 +55,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-sealed class CategoryColors(val backgroundColor: Color, val noteColor: Color) {
-    data object Category1 : CategoryColors(Color(0xFFD8A6FA), Color(0xFFF0D3FD))
-    data object Category2 : CategoryColors(Color(0xFFBBA6FA), Color(0xFFE5D7FF))
-    data object Category3 : CategoryColors(Color(0xFFA6B3FA), Color(0xFFD7D6FF))
-}
-
 @Composable
 fun MainScreen() {
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val categories = remember { mutableStateListOf(*categoriesList.toTypedArray()) }
+    val isNoteDialogOpen = remember { mutableStateOf(false) }
+    val selectedNote = remember { mutableStateOf<NoteData?>(null) }
+
     Scaffold(
+        topBar = {
+            TopBar()
+        },
         bottomBar = {
             BottomNavBar(selectedTabIndex.intValue) { newIndex ->
                 selectedTabIndex.intValue = newIndex
@@ -76,56 +76,67 @@ fun MainScreen() {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(8.dp, 0.dp, 8.dp, 0.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Your Notes", fontSize = 32.sp)
-                Spacer(modifier = Modifier.width(32.dp))
-                AddCategoryButton{ newCategoryName ->
-                    categories.add(CategoryData(newCategoryName, CategoryColors.Category1, mutableListOf()))
-                }
-            }
-            CategoryList(categories)
+            CategoryList(categories, onNoteClick = { note ->
+                isNoteDialogOpen.value = true
+                selectedNote.value = note
+            })
+        }
+        if (isNoteDialogOpen.value) {
+            NoteDialog(
+                note = selectedNote.value!!,
+                onConfirm = { isNoteDialogOpen.value = false },
+                onClose = { isNoteDialogOpen.value = false }
+            )
         }
     }
 }
 
-data class CategoryData(val name: String, val colors: CategoryColors, val notes: MutableList<NoteData>)
-data class NoteData(val header: String, val dueDate: String)
+data class CategoryData(val name: String, val notes: MutableList<NoteData>)
+data class NoteData(var header: String, var dueDate: String)
 
 val categoriesList = listOf(
-//    CategoryData("School - Week 10", CategoryColors.Category1, mutableListOf(
-//        NoteData("Chemistry Test", "Tomorrow"),
-//        NoteData("Science Test", "Tomorrow"),
-//        NoteData("English Test", "Tomorrow")
-//    )),
-//    CategoryData("Groceries", CategoryColors.Category2, mutableListOf(
-//        NoteData("Shampoo", ""),
-//        NoteData("Cat food", "")
-//    )),
-    CategoryData("Notes", CategoryColors.Category3, mutableListOf(
-//        NoteData("Emergency", "11/10"),
-//        NoteData("*Locked*", "")
-    ))
+    CategoryData("School - Week 10", mutableListOf(
+        NoteData("Chemistry Test", "Tomorrow"),
+        NoteData("Science Test", "Tomorrow"),
+        NoteData("English Test", "Tomorrow")
+    )),
+    CategoryData("Groceries", mutableListOf(
+        NoteData("Shampoo", ""),
+        NoteData("Cat food", "")
+    )),
+    CategoryData("Notes", mutableListOf(
+        NoteData("Emergency", "11/10"),
+        NoteData("*Locked*", "")
+    )),
+    CategoryData("Category", mutableListOf(
+        NoteData("Note", "Date"),
+        NoteData("Note", "Date"),
+        NoteData("Note", "Date")
+    )),
+    CategoryData("Category", mutableListOf(
+        NoteData("Note", "Date"),
+        NoteData("Note", "Date"),
+        NoteData("Note", "Date")
+    )),
 )
 
 @Composable
-fun CategoryList(categories: MutableList<CategoryData>) {
+fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) -> Unit) {
     LazyColumn {
         items(categories) { category ->
-            Category(category.name, category.colors) {
+            Category(category.name) {
                 category.notes.forEach { note ->
-                    Note(note.header, note.dueDate, category.colors)
-                }
-                AddNoteButton { newNoteHeader, newNoteDueDate ->
-                    category.notes.add(NoteData(newNoteHeader, newNoteDueDate))
+                    Note(note.header, note.dueDate, onClick = { onNoteClick(note) })
                 }
             }
         }
     }
+}
+
+@Composable
+fun TopBar() {
+    Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(8.dp, 2.dp))
 }
 
 @Composable
@@ -149,7 +160,7 @@ fun BottomNavBar(
                 Text(
                     "Notes",
                     fontSize = 18.sp,
-                    modifier = Modifier.offset(y = 4.dp)
+                    modifier = Modifier.offset(y = 8.dp)
                 )
             },
             selected = selectedTabIndex == 0,
@@ -167,7 +178,7 @@ fun BottomNavBar(
                 Text(
                     "Calendar",
                     fontSize = 18.sp,
-                    modifier = Modifier.offset(y = 4.dp)
+                    modifier = Modifier.offset(y = 8.dp)
                 )
             },
             selected = selectedTabIndex == 1,
@@ -177,12 +188,11 @@ fun BottomNavBar(
 }
 
 @Composable
-fun Category(header: String, colors: CategoryColors, notes: @Composable () -> Unit) {
+fun Category(header: String, notes: @Composable () -> Unit) {
     Column(
         modifier = Modifier
-            .padding(16.dp, 12.dp, 16.dp, 6.dp)
+            .padding(12.dp, 8.dp, 12.dp, 6.dp)
             .fillMaxWidth()
-            .background(colors.backgroundColor)
     ) {
         Text(header, fontSize = 24.sp, modifier = Modifier.padding(8.dp, 4.dp, 0.dp, 0.dp))
         notes()
@@ -190,12 +200,12 @@ fun Category(header: String, colors: CategoryColors, notes: @Composable () -> Un
 }
 
 @Composable
-fun Note(header: String, dueDate: String, colors: CategoryColors) {
+fun Note(header: String, dueDate: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .padding(6.dp)
             .fillMaxWidth()
-            .background(colors.noteColor)
+            .clickable(onClick = onClick)
     ) {
         Spacer(modifier = Modifier.height(4.dp))
         Row(
@@ -221,36 +231,50 @@ fun Note(header: String, dueDate: String, colors: CategoryColors) {
 }
 
 @Composable
-fun AddCategoryButton(onAddCategory: (String) -> Unit) {
-    val newCategoryName by remember { mutableStateOf("") }
-    Row(
+fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(1.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .animateContentSize()
     ) {
-        Button(onClick = {
-            onAddCategory(newCategoryName)
-        }) {
-            Text("Add Category")
-        }
-    }
-}
-
-@Composable
-fun AddNoteButton(onAddNote: (String, String) -> Unit) {
-    val newNoteHeader by remember { mutableStateOf("") }
-    val newNoteDueDate by remember { mutableStateOf("") }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(onClick = { onAddNote(newNoteHeader, newNoteDueDate) }) {
-            Text("Add Note")
+        Column(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_close_clear_cancel),
+                    contentDescription = "Close",
+                    modifier = Modifier.clickable(onClick = onClose)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            var header by remember { mutableStateOf(note.header) }
+            TextField(
+                value = header,
+                onValueChange = { header = it; note.header = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            var dueDate by remember { mutableStateOf(note.dueDate) }
+            TextField(
+                value = dueDate,
+                onValueChange = { dueDate = it; note.dueDate = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_menu_save),
+                contentDescription = "Confirm",
+                modifier = Modifier.clickable(onClick = onConfirm)
+            )
         }
     }
 }

@@ -15,26 +15,66 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val darkScheme = darkColorScheme(
+    primary = primaryDark,
+    onPrimary = onPrimaryDark,
+    primaryContainer = primaryContainerDark,
+    onPrimaryContainer = onPrimaryContainerDark,
+    secondary = secondaryDark,
+    onSecondary = onSecondaryDark,
+    secondaryContainer = secondaryContainerDark,
+    onSecondaryContainer = onSecondaryContainerDark,
+    tertiary = tertiaryDark,
+    onTertiary = onTertiaryDark,
+    tertiaryContainer = tertiaryContainerDark,
+    onTertiaryContainer = onTertiaryContainerDark,
+    error = errorDark,
+    onError = onErrorDark,
+    errorContainer = errorContainerDark,
+    onErrorContainer = onErrorContainerDark,
+    background = backgroundDark,
+    onBackground = onBackgroundDark,
+    surface = surfaceDark,
+    onSurface = onSurfaceDark,
+    surfaceVariant = surfaceVariantDark,
+    onSurfaceVariant = onSurfaceVariantDark,
+    outline = outlineDark,
+    outlineVariant = outlineVariantDark,
+    scrim = scrimDark,
+    inverseSurface = inverseSurfaceDark,
+    inverseOnSurface = inverseOnSurfaceDark,
+    inversePrimary = inversePrimaryDark,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val lightScheme = lightColorScheme(
+    primary = primaryLightMediumContrast,
+    onPrimary = onPrimaryLightMediumContrast,
+    primaryContainer = primaryContainerLightMediumContrast,
+    onPrimaryContainer = onPrimaryContainerLightMediumContrast,
+    secondary = secondaryLightMediumContrast,
+    onSecondary = onSecondaryLightMediumContrast,
+    secondaryContainer = secondaryContainerLightMediumContrast,
+    onSecondaryContainer = onSecondaryContainerLightMediumContrast,
+    tertiary = tertiaryLightMediumContrast,
+    onTertiary = onTertiaryLightMediumContrast,
+    tertiaryContainer = tertiaryContainerLightMediumContrast,
+    onTertiaryContainer = onTertiaryContainerLightMediumContrast,
+    error = errorLightMediumContrast,
+    onError = onErrorLightMediumContrast,
+    errorContainer = errorContainerLightMediumContrast,
+    onErrorContainer = onErrorContainerLightMediumContrast,
+    background = backgroundLightMediumContrast,
+    onBackground = onBackgroundLightMediumContrast,
+    surface = surfaceLightMediumContrast,
+    onSurface = onSurfaceLightMediumContrast,
+    surfaceVariant = surfaceVariantLightMediumContrast,
+    onSurfaceVariant = onSurfaceVariantLightMediumContrast,
+    outline = outlineLightMediumContrast,
+    outlineVariant = outlineVariantLightMediumContrast,
+    scrim = scrimLightMediumContrast,
+    inverseSurface = inverseSurfaceLightMediumContrast,
+    inverseOnSurface = inverseOnSurfaceLightMediumContrast,
+    inversePrimary = inversePrimaryLightMediumContrast,
 )
 
 @Composable
@@ -49,9 +89,8 @@ fun LichuTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkScheme
+        else -> lightScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -64,7 +103,7 @@ fun LichuTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = appTypography,
         content = content
     )
 }
