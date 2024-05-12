@@ -16,6 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -35,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,7 +51,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             LichuTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     MainScreen()
                 }
@@ -55,13 +61,71 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun MainScreen() {
+@Composable fun TopBar() {
+    Text("Your Notes", fontSize = 32.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 12.dp, top = 32.dp), color = MaterialTheme.colorScheme.onBackground)
+}
+
+@Composable fun BottomNavBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
+    NavigationBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(58.dp)
+            .clip(MaterialTheme.shapes.large),
+        containerColor = MaterialTheme.colorScheme.background,
+    ) {
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                    contentDescription = "Notes",
+                )
+            },
+            modifier = Modifier.padding(top = 10.dp),
+            selected = selectedTabIndex == 0,
+            onClick = { onItemClick(0) }
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_menu_month),
+                    contentDescription = "Calendar",
+                )
+            },
+            modifier = Modifier.padding(top = 10.dp),
+            selected = selectedTabIndex == 1,
+            onClick = { onItemClick(1) }
+        )
+    }
+}
+
+val categoriesList = listOf(
+    CategoryData("School - Week 10", mutableListOf(
+        NoteData("Chemistry Test", "Tomorrow"),
+        NoteData("Science Test", "Tomorrow"),
+        NoteData("English Test", "Tomorrow")
+    )),
+    CategoryData("Groceries", mutableListOf(
+        NoteData("Shampoo", ""),
+        NoteData("Cat food", "")
+    )),
+    CategoryData("Notes", mutableListOf(
+        NoteData("Emergency", "11/10"),
+        NoteData("*Locked*", "")
+    )),
+    CategoryData("Category", mutableListOf(
+        NoteData("Note", "Date"),
+        NoteData("Note", "Date")
+    )),
+    CategoryData("Category", mutableListOf(
+        NoteData("Note", "Date")
+    )),
+)
+
+@Composable fun MainScreen(){
     val selectedTabIndex = remember { mutableIntStateOf(0) }
     val categories = remember { mutableStateListOf(*categoriesList.toTypedArray()) }
     val isNoteDialogOpen = remember { mutableStateOf(false) }
     val selectedNote = remember { mutableStateOf<NoteData?>(null) }
-
     Scaffold(
         topBar = {
             TopBar()
@@ -75,7 +139,6 @@ fun MainScreen() {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
         ) {
             CategoryList(categories, onNoteClick = { note ->
                 isNoteDialogOpen.value = true
@@ -95,34 +158,7 @@ fun MainScreen() {
 data class CategoryData(val name: String, val notes: MutableList<NoteData>)
 data class NoteData(var header: String, var dueDate: String)
 
-val categoriesList = listOf(
-    CategoryData("School - Week 10", mutableListOf(
-        NoteData("Chemistry Test", "Tomorrow"),
-        NoteData("Science Test", "Tomorrow"),
-        NoteData("English Test", "Tomorrow")
-    )),
-    CategoryData("Groceries", mutableListOf(
-        NoteData("Shampoo", ""),
-        NoteData("Cat food", "")
-    )),
-    CategoryData("Notes", mutableListOf(
-        NoteData("Emergency", "11/10"),
-        NoteData("*Locked*", "")
-    )),
-    CategoryData("Category", mutableListOf(
-        NoteData("Note", "Date"),
-        NoteData("Note", "Date"),
-        NoteData("Note", "Date")
-    )),
-    CategoryData("Category", mutableListOf(
-        NoteData("Note", "Date"),
-        NoteData("Note", "Date"),
-        NoteData("Note", "Date")
-    )),
-)
-
-@Composable
-fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) -> Unit) {
+@Composable fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) -> Unit) {
     LazyColumn {
         items(categories) { category ->
             Category(category.name) {
@@ -134,111 +170,81 @@ fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) 
     }
 }
 
-@Composable
-fun TopBar() {
-    Text("Your Notes", fontSize = 32.sp, modifier = Modifier.padding(8.dp, 24.dp, 0.dp, 0.dp), color = MaterialTheme.colorScheme.onBackground)
-}
-
-@Composable
-fun BottomNavBar(
-    selectedTabIndex: Int,
-    onItemClick: (Int) -> Unit
-    ) {
-    NavigationBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .clip(MaterialTheme.shapes.large),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-    ) {
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_gallery),
-                    contentDescription = "Notes",
-                    Modifier.padding(top = 6.dp)
-                )
-            },
-            selected = selectedTabIndex == 0,
-            onClick = { onItemClick(0) }
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_month),
-                    contentDescription = "Calendar",
-                    Modifier.padding(top = 6.dp)
-                )
-            },
-            selected = selectedTabIndex == 1,
-            onClick = { onItemClick(1) }
-        )
-    }
-}
-
-@Composable
-fun Category(header: String, notes: @Composable () -> Unit) {
+@Composable fun Category(header: String, notes: @Composable () -> Unit) {
     Column(
         modifier = Modifier
-            .padding(12.dp, 8.dp, 12.dp, 6.dp)
+            .padding(16.dp, 8.dp, 16.dp, 8.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(MaterialTheme.colorScheme.outlineVariant)
             .fillMaxWidth()
     ) {
-        Text(header, fontSize = 24.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 0.dp), color = MaterialTheme.colorScheme.onSecondaryContainer)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+            Text(header, fontSize = 24.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 2.dp), color = MaterialTheme.colorScheme.inverseSurface)
+            Button(
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.outlineVariant),
+                onClick = { /*TODO*/ })
+                {Icon(painter = painterResource(id = android.R.drawable.ic_input_add), contentDescription = "Add", tint = MaterialTheme.colorScheme.inverseSurface)}
+        }
         notes()
     }
 }
 
-@Composable
-fun Note(header: String, dueDate: String, onClick: () -> Unit) {
+@Composable fun Note(header: String, dueDate: String, onClick: () -> Unit) {
+    var isChecked by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
-            .padding(6.dp)
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.small)
-            .background( MaterialTheme.colorScheme.onSecondary)
+            .background(MaterialTheme.colorScheme.onSecondary)
             .clickable(onClick = onClick)
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Checkbox(
+                checked = isChecked,
+                onCheckedChange = { isChecked = !isChecked },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colorScheme.secondary,
+                    uncheckedColor = MaterialTheme.colorScheme.secondary
+                ),
+                modifier = Modifier.padding(start = 4.dp)
+            )
             Text(
                 header,
                 fontSize = 16.sp,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 12.dp)
+                    .padding(start = 12.dp, top = 2.dp)
             )
             Text(
                 dueDate,
                 fontSize = 14.sp,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 12.dp)
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
-@Composable
-fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
+@Composable fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
     Surface(
         modifier = Modifier
-            .fillMaxSize().padding(0.dp, 64.dp)
+            .fillMaxSize()
             .animateContentSize()
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp)
+                .padding(top = 100.dp)
+                .background(color = MaterialTheme.colorScheme.inverseOnSurface)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(20.dp, 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -256,7 +262,8 @@ fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
                 onValueChange = { header = it; note.header = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp),
+                    .height(200.dp)
+                    .padding(20.dp, 0.dp),
                 singleLine = false,
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -266,7 +273,8 @@ fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
                 onValueChange = { dueDate = it; note.dueDate = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp),
+                    .height(80.dp)
+                    .padding(20.dp, 0.dp),
                 singleLine = true,
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -285,10 +293,9 @@ fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
     }
 }
 
-@Preview(showBackground = false, showSystemUi = false)
-@Composable
-fun MainScreenPreview() {
+@Preview(showBackground = true, showSystemUi = true) @Composable fun MainScreenPreview() {
     LichuTheme(darkTheme = true) {
         MainScreen()
+//        NoteDialog(NoteData("Header", "Due Date"), {}, {})
     }
 }
