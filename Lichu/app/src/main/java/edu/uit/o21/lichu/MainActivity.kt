@@ -121,15 +121,16 @@ val categoriesList = listOf(
     )),
 )
 
-@Composable fun MainScreen(){
+@Composable fun MainScreen() {
     val selectedTabIndex = remember { mutableIntStateOf(0) }
-    val categories = remember { mutableStateListOf(*categoriesList.toTypedArray()) }
+    val allCategories = remember { mutableStateListOf(*categoriesList.toTypedArray()) }
     val isNoteDialogOpen = remember { mutableStateOf(false) }
     val selectedNote = remember { mutableStateOf<NoteData?>(null) }
+    val selectedCategory = remember { mutableStateOf<CategoryData?>(null) }
+    var isaddNote = false
+
     Scaffold(
-        topBar = {
-            TopBar()
-        },
+        topBar = { TopBar() },
         bottomBar = {
             BottomNavBar(selectedTabIndex.intValue) { newIndex ->
                 selectedTabIndex.intValue = newIndex
@@ -140,14 +141,28 @@ val categoriesList = listOf(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            CategoryList(categories, onNoteClick = { note ->
-                isNoteDialogOpen.value = true
-                selectedNote.value = note
-            })
+            CategoryList(
+                categories = allCategories,
+                onNoteClick = { category, note ->
+                    isNoteDialogOpen.value = true
+                    selectedNote.value = note
+                    selectedCategory.value = category
+                    isaddNote = false
+                },
+                onAddNote = { category ->
+                    isNoteDialogOpen.value = true
+                    selectedCategory.value = category
+                    selectedNote.value = NoteData("", "")
+                    isaddNote = true
+                }
+            )
         }
+
         if (isNoteDialogOpen.value) {
             NoteDialog(
-                note = selectedNote.value!!,
+                isaddNote,
+                category = selectedCategory.value ?: CategoryData("", mutableListOf()),
+                note = selectedNote.value ?: NoteData("", ""),
                 onConfirm = { isNoteDialogOpen.value = false },
                 onClose = { isNoteDialogOpen.value = false }
             )
@@ -158,19 +173,21 @@ val categoriesList = listOf(
 data class CategoryData(val name: String, val notes: MutableList<NoteData>)
 data class NoteData(var header: String, var dueDate: String)
 
-@Composable fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (NoteData) -> Unit) {
+@Composable fun CategoryList(categories: MutableList<CategoryData>, onNoteClick: (CategoryData, NoteData) -> Unit, onAddNote: (CategoryData) -> Unit) {
     LazyColumn {
         items(categories) { category ->
-            Category(category.name) {
+            Category(category, {
                 category.notes.forEach { note ->
-                    Note(note.header, note.dueDate, onClick = { onNoteClick(note) })
+                    Note(note.header, note.dueDate, onClick = { onNoteClick(category, note) })
                 }
+            }) {
+                onAddNote(category)
             }
         }
     }
 }
 
-@Composable fun Category(header: String, notes: @Composable () -> Unit) {
+@Composable fun Category(category: CategoryData, notes: @Composable () -> Unit, onAddNote: (CategoryData) -> Unit) {
     Column(
         modifier = Modifier
             .padding(16.dp, 8.dp, 16.dp, 8.dp)
@@ -179,11 +196,13 @@ data class NoteData(var header: String, var dueDate: String)
             .fillMaxWidth()
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-            Text(header, fontSize = 24.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 2.dp), color = MaterialTheme.colorScheme.inverseSurface)
+            Text(category.name, fontSize = 24.sp, modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 2.dp), color = MaterialTheme.colorScheme.inverseSurface)
             Button(
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.outlineVariant),
-                onClick = { /*TODO*/ })
-                {Icon(painter = painterResource(id = android.R.drawable.ic_input_add), contentDescription = "Add", tint = MaterialTheme.colorScheme.inverseSurface)}
+                onClick = { onAddNote(category) }
+            ) {
+                Icon(painter = painterResource(id = android.R.drawable.ic_input_add), contentDescription = "Add", tint = MaterialTheme.colorScheme.inverseSurface)
+            }
         }
         notes()
     }
@@ -229,7 +248,7 @@ data class NoteData(var header: String, var dueDate: String)
     }
 }
 
-@Composable fun NoteDialog(note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
+@Composable fun NoteDialog(isAddNote: Boolean, category: CategoryData, note: NoteData, onConfirm: () -> Unit, onClose: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -286,7 +305,15 @@ data class NoteData(var header: String, var dueDate: String)
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_menu_save),
                     contentDescription = "Confirm",
-                    modifier = Modifier.clickable(onClick = onConfirm)
+                    modifier = Modifier.clickable {
+//                        if(isAddNote && header.isEmpty() && dueDate.isEmpty()){
+//                              return error message saying note cannot be blank
+//                        }
+                        if (isAddNote && (header.isNotEmpty() || dueDate.isNotEmpty())) {
+                            category.notes.add(note)
+                        }
+                        onConfirm()
+                    }
                 )
             }
         }
