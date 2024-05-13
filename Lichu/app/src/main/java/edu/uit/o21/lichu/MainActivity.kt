@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,8 +53,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             LichuTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.surface
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     MainScreen()
                 }
@@ -62,24 +63,51 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TopBar() {
-    Text(
-        "To do list",
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 12.dp, top = 32.dp),
-        color = MaterialTheme.colorScheme.onBackground
-    )
+fun TopBar(selectedTabIndex: Int) {
+    Column(modifier = Modifier.fillMaxWidth()){
+        Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp, end = 12.dp, top = 38.dp)
+            ,Arrangement.SpaceBetween
+            ){
+            when (selectedTabIndex) {
+                0 -> {
+                    Text("To do list",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.inverseSurface,
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+                        onClick = { /*TODO*/ }
+                    ){
+                        Text(text = "New Category", fontSize = 16.sp)
+                    }
+                }
+                1 -> {
+                    Text("Calendar",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
-fun BottomNavBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
+fun BottomBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(58.dp)
             .clip(MaterialTheme.shapes.large),
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         NavigationBarItem(
             icon = {
@@ -90,6 +118,9 @@ fun BottomNavBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
             },
             modifier = Modifier.padding(top = 10.dp),
             selected = selectedTabIndex == 0,
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                indicatorColor = MaterialTheme.colorScheme.surface),
             onClick = { onItemClick(0) }
         )
         NavigationBarItem(
@@ -101,6 +132,9 @@ fun BottomNavBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
             },
             modifier = Modifier.padding(top = 10.dp),
             selected = selectedTabIndex == 1,
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                indicatorColor = MaterialTheme.colorScheme.surface),
             onClick = { onItemClick(1) }
         )
     }
@@ -143,9 +177,9 @@ fun MainScreen() {
     var ifAddToDo = false
 
     Scaffold(
-        topBar = { TopBar() },
+        topBar = { TopBar(selectedTabIndex.intValue) },
         bottomBar = {
-            BottomNavBar(selectedTabIndex.intValue) { newIndex ->
+            BottomBar(selectedTabIndex.intValue) { newIndex ->
                 selectedTabIndex.intValue = newIndex
             }
         }
@@ -196,7 +230,8 @@ fun CategoryList(
         items(categories) { category ->
             Category(category, {
                 category.toDos.forEach { todo ->
-                    ToDoNote(todo.header, todo.dueDate, onClick = { onToDoClick(category, todo) })
+                    ToDoNote(todo.header, todo.dueDate,
+                        onClick = { onToDoClick(category, todo) })
                 }
             }) {
                 onAddToDo(category)
@@ -218,15 +253,18 @@ fun Category(
             .background(MaterialTheme.colorScheme.outlineVariant)
             .fillMaxWidth()
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 category.name,
-                fontSize = 24.sp,
-                modifier = Modifier.padding(16.dp, 4.dp, 0.dp, 2.dp),
+                fontSize = 22.sp,
+                modifier = Modifier.padding(16.dp, 6.dp, 0.dp, 2.dp),
                 color = MaterialTheme.colorScheme.inverseSurface
             )
             Button(
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.outlineVariant),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.outlineVariant,
+                    contentColor = MaterialTheme.colorScheme.inverseSurface),
                 onClick = { onAddToDo(category) }
             ) {
                 Icon(
