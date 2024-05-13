@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,7 +70,7 @@ fun TopBar(selectedTabIndex: Int) {
                 .fillMaxWidth()
                 .padding(start = 12.dp, end = 12.dp, top = 38.dp)
             ,Arrangement.SpaceBetween
-            ){
+        ){
             when (selectedTabIndex) {
                 0 -> {
                     Text("To do list",
@@ -82,7 +83,9 @@ fun TopBar(selectedTabIndex: Int) {
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = MaterialTheme.colorScheme.inverseSurface,
                         ),
+                        modifier = Modifier.padding(top = 2.dp),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant),
+                        contentPadding = PaddingValues(12.dp, 0.dp, 12.dp, 0.dp),
                         onClick = { /*TODO*/ }
                     ){
                         Text(text = "New Category", fontSize = 16.sp)
@@ -142,27 +145,8 @@ fun BottomBar(selectedTabIndex: Int, onItemClick: (Int) -> Unit) {
 
 val categoriesList = listOf(
     CategoryData(
-        "School - Week 10", mutableListOf(
-            ToDoData("Chemistry Test", "Tomorrow"),
-            ToDoData("Science Test", "Tomorrow"),
-            ToDoData("English Test", "Tomorrow")
-        )
-    ),
-    CategoryData(
-        "Groceries", mutableListOf(
-            ToDoData("Shampoo", ""),
-            ToDoData("Cat food", "")
-        )
-    ),
-    CategoryData(
         "Todo", mutableListOf(
-            ToDoData("Emergency", "11/10"),
-            ToDoData("*Locked*", "")
-        )
-    ),
-    CategoryData(
-        "Category", mutableListOf(
-            ToDoData("Note", "Date")
+            ToDoData("Example", "Dec 11"),
         )
     ),
 )
@@ -398,7 +382,7 @@ fun ToDoDialog(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview()
 @Composable
 fun MainScreenPreview() {
     LichuTheme(darkTheme = true) {
