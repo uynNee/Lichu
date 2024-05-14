@@ -382,7 +382,7 @@ fun ToDoDialog(
     }
 }
 
-@Preview()
+@Preview
 @Composable
 fun MainScreenPreview() {
     LichuTheme(darkTheme = true) {
