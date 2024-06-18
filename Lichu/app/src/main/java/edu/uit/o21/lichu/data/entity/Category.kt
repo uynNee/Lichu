@@ -1,4 +1,4 @@
-package edu.uit.o21.lichu.entity
+package edu.uit.o21.lichu.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

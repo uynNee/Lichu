@@ -1,4 +1,4 @@
-package edu.uit.o21.lichu.entity
+package edu.uit.o21.lichu.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -15,7 +15,7 @@ data class ToDo(
     @PrimaryKey(autoGenerate = true) val todoId: Int,
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "isDone") val isDone: Boolean,
-    @ColumnInfo(name = "startTime") val startTime: String,
-    @ColumnInfo(name = "endTime") val endTime: String,
+    @ColumnInfo(name = "startTime") val startTime: Long,
+    @ColumnInfo(name = "endTime") val endTime: Long,
     @ColumnInfo(name = "categoryId") val categoryId: Int
 )

@@ -1,11 +1,11 @@
-package edu.uit.o21.lichu.dao
+package edu.uit.o21.lichu.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import edu.uit.o21.lichu.entity.ToDo
+import edu.uit.o21.lichu.data.entity.ToDo
 import kotlinx.coroutines.flow.Flow
 
 @Dao
