@@ -74,7 +74,6 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
-    kapt(libs.room.compiler)
     ksp(libs.room.compiler)
     // Compose dependencies
     implementation(libs.ui)

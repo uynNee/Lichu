@@ -3,6 +3,7 @@ package edu.uit.o21.lichu.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(foreignKeys = [ForeignKey(
@@ -10,7 +11,9 @@ import androidx.room.PrimaryKey
     parentColumns = ["categoryId"],
     childColumns = ["categoryId"],
     onDelete = ForeignKey.CASCADE
-)])
+    )],
+    indices = [Index("categoryId")]
+)
 data class ToDo(
     @PrimaryKey(autoGenerate = true) val todoId: Int,
     @ColumnInfo(name = "content") val content: String,

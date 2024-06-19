@@ -1,5 +1,4 @@
 package edu.uit.o21.lichu.data
-
 import edu.uit.o21.lichu.data.dao.CategoryDao
 import edu.uit.o21.lichu.data.dao.ToDoDao
 import edu.uit.o21.lichu.data.entity.Category
@@ -14,7 +13,7 @@ class Repository (
     private val categoryDao: CategoryDao,
     private val todoDao: ToDoDao? = null
 ){
-    val categories = categoryDao.getAll()
+    val getCategories = categoryDao.getAll()
     fun getTodos(categoryId: Int) = todoDao?.getAll(categoryId)
 
     suspend fun insertCategory(category: Category) = categoryDao.insert(category)
@@ -25,19 +24,22 @@ class Repository (
     suspend fun updateTodo(todo: ToDo) = todoDao?.update(todo)
     suspend fun deleteTodo(todo: ToDo) = todoDao?.delete(todo)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    suspend fun search(query: String): Flow<List<Category>> {
-        val categoriesByName = categoryDao.findByName("%$query%")
-        val categoryIdsByContent = todoDao?.findByContent("%$query%")
-        val categoriesByContent = categoryIdsByContent!!.flatMapLatest { ids ->
-            if (ids.isEmpty()) {
-                flowOf(emptyList())
-            } else {
-                categoryDao.findById(ids)
-            }
-        }
-        return categoriesByName.combine(categoriesByContent) { list1, list2 ->
-            (list1 + list2).distinctBy { it.categoryId }
-        }
-    }
+    fun getToDoByContent(content: String)= todoDao?.findByContent("%$content%")
+    fun getCategoriesByName(name: String)= categoryDao.findByName("%$name%")
+    fun getCategoriesById(ids: List<Int>)= categoryDao.findById(ids)
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    suspend fun search(query: String): Flow<List<Category>> {
+//        val categoriesByName = categoryDao.findByName("%$query%")
+//        val categoryIdsByContent = todoDao?.findByContent("%$query%")
+//        val categoriesByContent = categoryIdsByContent!!.flatMapLatest { ids ->
+//            if (ids.isEmpty()) {
+//                flowOf(emptyList())
+//            } else {
+//                categoryDao.findById(ids)
+//            }
+//        }
+//        return categoriesByName.combine(categoriesByContent) { list1, list2 ->
+//            (list1 + list2).distinctBy { it.categoryId }
+//        }
+//    }
 }

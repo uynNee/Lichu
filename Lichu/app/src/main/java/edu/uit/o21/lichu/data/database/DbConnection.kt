@@ -24,10 +24,10 @@ abstract class DbConnection : RoomDatabase(){
     companion object{
         @Volatile
         var INSTANCE: DbConnection? = null
-        fun getInstance(context: Context): DbConnection {
+        fun getDatabase(context: Context): DbConnection {
             return INSTANCE ?: synchronized(this){
                 val instance = Room.databaseBuilder(
-                    context,
+                    context.applicationContext,
                     DbConnection::class.java,
                     "lichu_db"
                 ).build()

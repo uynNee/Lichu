@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lichu"
         tools:targetApi="31">
+<!--            android:name=".Myapp"-->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
