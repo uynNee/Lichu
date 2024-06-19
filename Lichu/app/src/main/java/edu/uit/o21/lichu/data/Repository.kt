@@ -1,4 +1,4 @@
-package edu.uit.o21.lichu.ui
+package edu.uit.o21.lichu.data
 
 import edu.uit.o21.lichu.data.dao.CategoryDao
 import edu.uit.o21.lichu.data.dao.ToDoDao
@@ -12,24 +12,24 @@ import kotlinx.coroutines.flow.flowOf
 
 class Repository (
     private val categoryDao: CategoryDao,
-    private val todoDao: ToDoDao
+    private val todoDao: ToDoDao? = null
 ){
     val categories = categoryDao.getAll()
-    fun getTodos(categoryId: Int) = todoDao.getAll(categoryId)
+    fun getTodos(categoryId: Int) = todoDao?.getAll(categoryId)
 
     suspend fun insertCategory(category: Category) = categoryDao.insert(category)
     suspend fun updateCategory(category: Category) = categoryDao.update(category)
     suspend fun deleteCategory(category: Category) = categoryDao.delete(category)
 
-    suspend fun insertTodo(todo: ToDo) = todoDao.insert(todo)
-    suspend fun updateTodo(todo: ToDo) = todoDao.update(todo)
-    suspend fun deleteTodo(todo: ToDo) = todoDao.delete(todo)
+    suspend fun insertTodo(todo: ToDo) = todoDao?.insert(todo)
+    suspend fun updateTodo(todo: ToDo) = todoDao?.update(todo)
+    suspend fun deleteTodo(todo: ToDo) = todoDao?.delete(todo)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun search(query: String): Flow<List<Category>> {
         val categoriesByName = categoryDao.findByName("%$query%")
-        val categoryIdsByContent = todoDao.findByContent("%$query%")
-        val categoriesByContent = categoryIdsByContent.flatMapLatest { ids ->
+        val categoryIdsByContent = todoDao?.findByContent("%$query%")
+        val categoriesByContent = categoryIdsByContent!!.flatMapLatest { ids ->
             if (ids.isEmpty()) {
                 flowOf(emptyList())
             } else {

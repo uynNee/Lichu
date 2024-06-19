@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    kotlin("kapt")
 }
 
 android {
@@ -61,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,6 +74,7 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+    kapt(libs.room.compiler)
     ksp(libs.room.compiler)
     // Compose dependencies
     implementation(libs.ui)
@@ -79,4 +82,10 @@ dependencies {
     implementation(libs.androidx.activity.compose.v131)
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+}
+kapt {
+    correctErrorTypes = true
 }
