@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Lichu"
+        android:name=".MainApplication"
         tools:targetApi="31">
-<!--            android:name=".Myapp"-->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

@@ -1,34 +1,24 @@
 package edu.uit.o21.lichu.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import edu.uit.o21.lichu.data.Repository
+import edu.uit.o21.lichu.MainApplication
 import edu.uit.o21.lichu.data.entity.Category
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
-class CategoryViewModel (private val resository: Repository) : ViewModel(){
-    fun getAllCategories(): Flow<List<Category>> = resository.getCategories
-    fun getCategoriesById(ids: List<Int>): Flow<List<Category>> = resository.getCategoriesById(ids)
-    fun getCategoriesByName(name: String): Flow<List<Category>> = resository.getCategoriesByName(name)
+class CategoryViewModel:ViewModel(){
+    val categoryDao=MainApplication.dbConnection.getCategoryDao()
 
-    fun insert(category: Category) = viewModelScope.launch {
-        resository.insertCategory(category)
+    val categoryList: LiveData<List<Category>> = categoryDao.getAll()
+
+    fun addCategory(name:String){
+        categoryDao.insert(Category(name=name))
     }
-    fun delete(category: Category) = viewModelScope.launch {
-        resository.deleteCategory(category)
+
+    fun updateCategory(name:String){
+        categoryDao.update(Category(name=name))
     }
-    fun update(category: Category) = viewModelScope.launch {
-        resository.updateCategory(category)
-    }
-}
-class CategoryViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CategoryViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+
+    fun deleteCategory(id:Int){
+        categoryDao.delete(id)
     }
 }

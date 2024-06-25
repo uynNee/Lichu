@@ -1,27 +1,26 @@
 package edu.uit.o21.lichu.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import edu.uit.o21.lichu.data.entity.ToDo
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ToDoDao {
     @Query("SELECT * FROM todo WHERE categoryId = :categoryId")
-    fun getAll(categoryId:Int): Flow<List<ToDo>>
+    fun getAll(categoryId:Int): LiveData<List<ToDo>>
 
     @Insert
-    suspend fun insert(todo: ToDo)
+    fun insert(todo: ToDo)
 
     @Update
-    suspend fun update(todo: ToDo)
+    fun update(todo: ToDo)
 
-    @Delete
-    suspend fun delete(todo: ToDo)
-
-    @Query("SELECT DISTINCT categoryId FROM todo WHERE content LIKE :content")
-    fun findByContent(content: String): Flow<List<Int>>
+    @Query("DELETE FROM todo WHERE id=:id")
+    fun delete(id: Int)
+//
+//    @Query("SELECT DISTINCT categoryId FROM todo WHERE content LIKE :content")
+//    fun findByContent(content: String): Flow<List<Int>>
 }

@@ -1,30 +1,29 @@
 package edu.uit.o21.lichu.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import edu.uit.o21.lichu.data.entity.Category
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
     @Query("SELECT * FROM category")
-    fun getAll(): Flow<List<Category>>
+    fun getAll(): LiveData<List<Category>>
 
     @Insert
-    suspend fun insert(category: Category)
+    fun insert(category: Category)
 
     @Update
-    suspend fun update(category: Category)
+    fun update(category: Category)
 
-    @Delete
-    suspend fun delete(category: Category)
-
-    @Query("SELECT * FROM category WHERE name LIKE :name")
-    fun findByName(name: String): Flow<List<Category>>
-
-    @Query("SELECT * FROM category WHERE categoryId IN (:categoryIds)")
-    fun findById(categoryIds: List<Int>): Flow<List<Category>>
+    @Query("DELETE FROM category where id=:id")
+    fun delete(id:Int)
+//
+//    @Query("SELECT * FROM category WHERE name LIKE :name")
+//    fun findByName(name: String): Flow<List<Category>>
+//
+//    @Query("SELECT * FROM category WHERE id IN (:ids)")
+//    fun findById(ids: List<Int>): Flow<List<Category>>
 }
