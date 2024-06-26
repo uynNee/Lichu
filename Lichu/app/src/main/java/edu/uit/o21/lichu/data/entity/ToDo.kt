@@ -26,9 +26,9 @@ data class ToDo(
 fun getFakeToDo():List<ToDo>{
     return listOf<ToDo>(
         ToDo(id=1,content="đây là test khi text dài vãi lìn he he he he he he he he he he he he he", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
-        ToDo(id=1,content="check true", isDone = true, startTime = 0, endTime = 10, categoryId = 1),
-        ToDo(id=1,content="homework", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
-        ToDo(id=1,content="housework", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
-        ToDo(id=1,content="free time", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
+        ToDo(id=2,content="check true", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
+        ToDo(id=3,content="homework", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
+        ToDo(id=4,content="housework", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
+        ToDo(id=5,content="free time", isDone = false, startTime = 0, endTime = 10, categoryId = 1),
     )
 }
