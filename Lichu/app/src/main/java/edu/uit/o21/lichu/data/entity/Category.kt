@@ -12,9 +12,9 @@ data class Category(
 
 fun getFakeCategory():List<Category>{
     return listOf<Category>(
-        Category(id=1, "Note1"),
-        Category(id=2,"Note2"),
-        Category(id=3,"Note3"),
-        Category(id=4,"Note4")
+        Category(id=1, "Note 1 dài vãi lìn hehehehe he he h he"),
+        Category(id=2,"Note 2"),
+        Category(id=3,"Note 3"),
+        Category(id=4,"Note 4")
     )
 }
