@@ -8,7 +8,6 @@ class MainApplication :Application(){
     companion object{
         lateinit var dbConnection:DbConnection
     }
-
     override fun onCreate() {
         super.onCreate()
         dbConnection= Room.databaseBuilder(

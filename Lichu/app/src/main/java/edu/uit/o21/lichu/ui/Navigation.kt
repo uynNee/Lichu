@@ -31,10 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.navigation.NavController
 import edu.uit.o21.lichu.ui.theme.LichuTheme
 
 @Composable
-fun Navigation(){
+fun Navigation(navController: NavController){
     var selectedItem by remember{ mutableIntStateOf(0) }
     val barItems= listOf(
         BarItem(
@@ -58,7 +59,14 @@ fun Navigation(){
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    selectedItem=index
+                    selectedItem = index
+                    navController.navigate(barItem.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 icon = {
                     Icon(
@@ -87,21 +95,16 @@ data class BarItem(
     val icon: ImageVector,
     val route:String
 )
-//sealed class Screens(val route : String) {
-//    object Todo : Screens("home_route")
-//    object Search : Screens("search_route")
-//    object Profile : Screens("profile_route")
-//}
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    LichuTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            MyApp()
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    LichuTheme {
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = MaterialTheme.colorScheme.background
+//        ) {
+//            MyApp()
+//        }
+//    }
+//}
