@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CategoryViewModel:ViewModel(){
-    val categoryDao=MainApplication.dbConnection.getCategoryDao()
+    private val categoryDao=MainApplication.dbConnection.getCategoryDao()
 
     val categoryList: LiveData<List<Category>> = categoryDao.getAll()
 

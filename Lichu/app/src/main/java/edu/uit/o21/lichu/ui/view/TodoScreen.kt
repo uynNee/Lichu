@@ -1,6 +1,7 @@
 package edu.uit.o21.lichu.ui.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,16 +45,20 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import edu.uit.o21.lichu.data.entity.Category
+import edu.uit.o21.lichu.ui.MyApp
+import edu.uit.o21.lichu.ui.theme.LichuTheme
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 import edu.uit.o21.lichu.viewmodel.ToDoViewModel
 
 @Composable
-fun TodolistScreen() {
-    val categoryViewModel: CategoryViewModel = viewModel()
+fun TodolistScreen(navController:NavController) {
+    val categoryViewModel:CategoryViewModel = viewModel()
     val categoryList by categoryViewModel.categoryList.observeAsState(emptyList())
 
     Scaffold(
@@ -68,7 +73,7 @@ fun TodolistScreen() {
         ) {
             LazyColumn {
                 itemsIndexed(categoryList) { _: Int, item: Category ->
-                    CategoryItems(item = item)
+                    CategoryItems(item = item,navController)
                 }
             }
         }
@@ -76,8 +81,8 @@ fun TodolistScreen() {
 }
 
 @Composable
-fun CategoryItems(item: Category) {
-    val toDoViewModel: ToDoViewModel = viewModel()
+fun CategoryItems(item: Category,navController:NavController) {
+    val toDoViewModel:ToDoViewModel = viewModel()
     val toDoList by toDoViewModel.todoList(item.id).observeAsState(emptyList())
 
     Column(
@@ -87,6 +92,10 @@ fun CategoryItems(item: Category) {
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable{
+                navController.navigate("CategoryOnclickScreen")
+//                println("Toi duoc nhan ${item.name}")
+            }
     ) {
         Text(
             text = item.name,

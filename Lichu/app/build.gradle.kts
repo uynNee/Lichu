@@ -88,12 +88,9 @@ dependencies {
     implementation(libs.androidx.activity.compose.v131)
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    // Hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
     //Compose Calendar
-    implementation(libs.composecalendar)
-    implementation(libs.composecalendarKotlinxDatetime)
+    implementation(libs.viewCalendar)
+    implementation(libs.composeCalendar)
     coreLibraryDesugaring(libs.desugarJdkLibs)
 }
 kapt {
