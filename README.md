@@ -10,4 +10,4 @@ Key Features:
 ## Additional Dependencies Used in Lichu
 Lichu utilizes these dependencies:
 - **[AndroidX Room:](https://developer.android.com/jetpack/androidx/releases/room)** Persistence library for managing SQLite databases.
-- **[Compose Calendar and Kotlinx-Datetime](https://github.com/boguszpawlowski/ComposeCalendar/):** Libraries for integrating calendar functionality with Compose.
+- **[Compose Calendar and Kotlinx-Datetime](https://github.com/kizitonwose/Calendar):** Libraries for integrating calendar functionality with Compose.
