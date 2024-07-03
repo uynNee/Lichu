@@ -60,13 +60,12 @@ fun AddTodoScreen(navController: NavController) {
     val todoViewModel: ToDoViewModel = viewModel()
 
     var content by remember { mutableStateOf("") }
-//    var startDate by remember { mutableStateOf(LocalDate.now())}
-    var endDate by remember { mutableStateOf(LocalDate.now())}
+    var endDate by remember { mutableStateOf<LocalDate?>(null) }
     val currentDate = LocalDate.now()
 
     var expanded by remember { mutableStateOf(false) }
     val categoryListState = categoryViewModel.categoryList.observeAsState(emptyList())
-    val categoryList=categoryListState.value
+    val categoryList = categoryListState.value
     var selectedCategory by remember(categoryList) {
         mutableStateOf(if (categoryList.isNotEmpty()) categoryList[0] else null)
     }
@@ -76,7 +75,7 @@ fun AddTodoScreen(navController: NavController) {
         }
     }
     val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-
+    var isContentEmpty by remember { mutableStateOf(content.isEmpty()) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -94,7 +93,6 @@ fun AddTodoScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
-//            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -102,34 +100,26 @@ fun AddTodoScreen(navController: NavController) {
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-
             TextField(
                 value = content,
-                onValueChange = { content = it },
+                onValueChange = {
+                    content = it
+                    isContentEmpty = it.isEmpty()
+                },
                 label = { Text("Content") },
+                singleLine=true,
                 modifier = Modifier.fillMaxWidth()
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
-//            DatePickerField(
-//                label = "Start Date",
-//                selectedDate = startDate,
-//                onDateSelected = { startDate = it },
-//                dateFormatter = dateFormatter
-//            )
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-
             DatePickerField(
                 label = "End Date",
                 selectedDate = endDate,
-                onDateSelected = { endDate = it },
+                onDateSelected = {
+                    endDate = it
+                },
                 dateFormatter = dateFormatter
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded }
@@ -148,7 +138,6 @@ fun AddTodoScreen(navController: NavController) {
                             .fillMaxWidth()
                     )
                 }
-
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
@@ -164,7 +153,6 @@ fun AddTodoScreen(navController: NavController) {
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -182,18 +170,22 @@ fun AddTodoScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        selectedCategory?.let { ToDo(
-                            content = content,
-                            startTime = currentDate,
-                            endTime = endDate,
-                            isDone = false,
-                            categoryId = it.id)
+                        if (content.isNotEmpty()) {
+                            selectedCategory?.let { category ->
+                                val todo = ToDo(
+                                    content = content,
+                                    startTime = currentDate,
+                                    endTime = endDate,
+                                    isDone = false,
+                                    categoryId = category.id
+                                )
+                                todoViewModel.addTodo(todo)
+                                navController.popBackStack()
+                            }
                         }
-                            ?.let { todoViewModel.addTodo(it) }
-//                            ?.let { println(it) }
-                        navController.popBackStack()
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled = content.isNotEmpty()
                 ) {
                     Text("Confirm")
                 }
@@ -224,7 +216,6 @@ fun DatePickerField(
             }, year, month, day
         )
     }
-
     OutlinedTextField(
         value = selectedDate?.format(dateFormatter) ?: "",
         onValueChange = { },

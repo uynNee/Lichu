@@ -20,6 +20,6 @@ data class ToDo(
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "isDone") var isDone: Boolean,
     @ColumnInfo(name = "startTime") val startTime: LocalDate,
-    @ColumnInfo(name = "endTime") val endTime: LocalDate,
+    @ColumnInfo(name = "endTime") val endTime: LocalDate?,
     @ColumnInfo(name = "categoryId") val categoryId: Int
 )

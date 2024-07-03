@@ -9,6 +9,9 @@ import edu.uit.o21.lichu.data.entity.ToDo
 
 @Dao
 interface ToDoDao {
+    @Query("SELECT * FROM todo")
+    fun calendarGetAll(): LiveData<List<ToDo>>
+
     @Query("SELECT * FROM todo WHERE categoryId = :categoryId")
     fun getAll(categoryId:Int): LiveData<List<ToDo>>
 
@@ -20,7 +23,4 @@ interface ToDoDao {
 
     @Query("DELETE FROM todo WHERE id=:id")
     fun delete(id: Int)
-//
-//    @Query("SELECT DISTINCT categoryId FROM todo WHERE content LIKE :content")
-//    fun findByContent(content: String): Flow<List<Int>>
 }

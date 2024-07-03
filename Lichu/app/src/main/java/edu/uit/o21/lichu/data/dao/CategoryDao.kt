@@ -12,6 +12,9 @@ interface CategoryDao {
     @Query("SELECT * FROM category")
     fun getAll(): LiveData<List<Category>>
 
+    @Query("SELECT COUNT(*) > 0 FROM category WHERE name = :categoryName")
+    fun checkName(categoryName: String):LiveData<Boolean>
+
     @Insert
     fun insert(category: Category)
 

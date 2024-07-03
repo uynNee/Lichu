@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,12 +36,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCategoryScreen(navController: NavController) {
     var categoryName by remember { mutableStateOf("") }
     val categoryViewModel: CategoryViewModel = viewModel()
+    val isDuplicate = categoryViewModel.checkName(categoryName).observeAsState(initial = false)
+    var isEmpty by remember { mutableStateOf(categoryName.isEmpty()) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,7 +72,10 @@ fun AddCategoryScreen(navController: NavController) {
 
                 TextField(
                     value = categoryName,
-                    onValueChange = { categoryName = it },
+                    onValueChange = {  newValue ->
+                        categoryName = newValue
+                        isEmpty = newValue.isEmpty()
+                                    },
                     label = { Text("Category name") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,6 +88,25 @@ fun AddCategoryScreen(navController: NavController) {
                         unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 )
+//                if (isEmpty) {
+//                    Text(
+//                        text = "Category name cannot be empty",
+//                        color = MaterialTheme.colorScheme.error,
+//                        style = MaterialTheme.typography.bodySmall,
+//                        modifier = Modifier.padding(bottom = 16.dp)
+//                    )
+//                } else
+                    if (isDuplicate.value) {
+                    Text(
+                        text = "Category name already exists",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -96,10 +122,13 @@ fun AddCategoryScreen(navController: NavController) {
 
                     Button(
                         onClick = {
-                            categoryViewModel.addCategory(categoryName)
-                            navController.popBackStack()
+                            if (!isEmpty && !isDuplicate.value) {
+                                categoryViewModel.addCategory(categoryName)
+                                navController.popBackStack()
+                            }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        enabled = !isEmpty && !isDuplicate.value
                     ) {
                         Text("Confirm")
                     }

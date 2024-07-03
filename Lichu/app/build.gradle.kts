@@ -9,7 +9,6 @@ plugins {
 android {
     namespace = "edu.uit.o21.lichu"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "edu.uit.o21.lichu"
         minSdk = 24
@@ -21,10 +20,10 @@ android {
             useSupportLibrary = true
         }
     }
-
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = false // Change to true when release
+//            isShrinkResources = true // Change to true when release
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -82,10 +81,6 @@ dependencies {
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
-    // Compose dependencies
-    implementation(libs.ui)
-    implementation(libs.androidx.material)
-    implementation(libs.androidx.activity.compose.v131)
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     //Compose Calendar

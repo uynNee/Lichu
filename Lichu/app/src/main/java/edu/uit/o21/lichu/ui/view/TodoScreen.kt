@@ -1,5 +1,8 @@
 package edu.uit.o21.lichu.ui.view
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,12 +58,13 @@ import edu.uit.o21.lichu.ui.MyApp
 import edu.uit.o21.lichu.ui.theme.LichuTheme
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 import edu.uit.o21.lichu.viewmodel.ToDoViewModel
+import java.time.temporal.ChronoUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TodolistScreen(navController:NavController) {
     val categoryViewModel:CategoryViewModel = viewModel()
     val categoryList by categoryViewModel.categoryList.observeAsState(emptyList())
-
     Scaffold(
         topBar = {SearchBar()},
         modifier = Modifier.fillMaxSize(),
@@ -80,6 +84,8 @@ fun TodolistScreen(navController:NavController) {
     }
 }
 
+@SuppressLint("DefaultLocale")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CategoryItems(item: Category,navController:NavController) {
     val toDoViewModel:ToDoViewModel = viewModel()
@@ -92,9 +98,8 @@ fun CategoryItems(item: Category,navController:NavController) {
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable{
+            .clickable {
                 navController.navigate("CategoryOnclickScreen")
-//                println("Toi duoc nhan ${item.name}")
             }
     ) {
         Text(
@@ -116,6 +121,40 @@ fun CategoryItems(item: Category,navController:NavController) {
                     text = todo.content,
                     modifier = Modifier.weight(1f)
                 )
+                Spacer(modifier = Modifier.width(16.dp))
+                if(todo.endTime!=null){
+                    val daysBetween = ChronoUnit.DAYS.between(todo.startTime, todo.endTime)
+                    val monthsBetween = daysBetween / 30
+                    val yearsBetween = monthsBetween / 12
+                    if (yearsBetween != 0L) {
+                        val yearsText = buildString {
+                            append("$yearsBetween ")
+                            append(if (yearsBetween < 1) "years" else "year")
+                            if ((monthsBetween % 12).toInt() !=0) {
+                                append("+")
+                            }
+                        }
+                        Text(text = yearsText)
+                    }
+                    else if (monthsBetween != 0L) {
+                        val monthText = buildString {
+                            append("$monthsBetween ")
+                            append(if (monthsBetween > 1) "months" else "month")
+                            if ((daysBetween % 30).toInt() !=0) {
+                                append("+")
+                            }
+                        }
+                        Text(text = monthText)
+                    }
+                    else if (daysBetween != 0L) {
+                        val daysText =  if (daysBetween > 1) "$daysBetween days"
+                                        else "$daysBetween day"
+                        Text(text = daysText)
+                    }
+                    else {
+                        Text(text = "Due")
+                    }
+                }
             }
             count++
         }
@@ -200,7 +239,6 @@ fun SearchBar() {
                 }
             }
         }
-
         if (isFocused) {
             TextButton(
                 onClick = {
@@ -217,16 +255,3 @@ fun SearchBar() {
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    LichuTheme {
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            MyApp()
-//        }
-//    }
-//}

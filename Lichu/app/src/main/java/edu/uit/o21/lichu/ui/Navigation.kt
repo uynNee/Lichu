@@ -49,7 +49,6 @@ fun Navigation(navController: NavController){
             route = "CalendarScreen"
         )
     )
-
     NavigationBar (
         modifier = Modifier.height(56.dp),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -90,21 +89,9 @@ fun Navigation(navController: NavController){
         }
     }
 }
+
 data class BarItem(
     val title: String,
     val icon: ImageVector,
     val route:String
 )
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    LichuTheme {
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            MyApp()
-//        }
-//    }
-//}
