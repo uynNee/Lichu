@@ -34,7 +34,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -88,20 +87,20 @@ fun CalendarScreen() {
     val daysOfWeek = remember { daysOfWeek() }
     val toDoViewModel: ToDoViewModel = viewModel()
     val todos by toDoViewModel.calendarTodoList().observeAsState(emptyList())
-
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     val todosInSelectedDate = remember(selection, todos) {
         selection?.date?.let { selectedDate ->
             todos.filter { todo ->
                 val startDate = LocalDate.parse(todo.startTime.toString())
-                val endDate = todo.endTime?.let { LocalDate.parse(it.toString()) } ?: startDate
-                (startDate <= selectedDate) && (endDate >= selectedDate)
+                val endDate = todo.endTime?.let { LocalDate.parse(it.toString()) }
+                endDate != null && (startDate <= selectedDate) && (endDate >= selectedDate)
             }
         }.orEmpty()
     }
-
+    LaunchedEffect(todosInSelectedDate) {
+        openBottomSheet = todosInSelectedDate.isNotEmpty()
+    }
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -143,12 +142,12 @@ fun CalendarScreen() {
                             isSelected = selection == day,
                             todos = todos.filter { todo ->
                                 val startDate = LocalDate.parse(todo.startTime.toString())
-                                val endDate = todo.endTime?.let { LocalDate.parse(it.toString()) } ?: startDate
-                                (startDate <= day.date) && (endDate >= day.date)
+                                val endDate = todo.endTime?.let { LocalDate.parse(it.toString()) }
+                                endDate != null && (startDate <= day.date) && (endDate >= day.date)
                             }
                         ) { clicked ->
                             selection = clicked
-                            openBottomSheet = true
+                            openBottomSheet = todosInSelectedDate.isNotEmpty()
                         }
                     }
                 },
@@ -197,7 +196,7 @@ private fun Day(
     val maxVisibleTodos = 3
     val visibleTodos = todos.take(maxVisibleTodos)
     val moreTodosCount = todos.size - visibleTodos.size
-    val todoColors = listOf(Color(0xFFffd6ff), Color(0xFFc8b6ff), Color(0xFFbbd0ff))
+    val todoColors = listOf(Color(0xFFffd6ff), Color(0xFFc8b6ff), Color(0xFFbbd0ff), Color(0xFFa0c4ff))
     val dayState = remember(day) {
         mutableStateOf(day)
     }
@@ -281,23 +280,6 @@ private fun MonthHeader(
     }
 }
 
-@Composable
-private fun LazyItemScope.TodoInformation(todo: ToDo) {
-    Row(
-        modifier = Modifier
-            .fillParentMaxWidth()
-            .height(IntrinsicSize.Max),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        Text(
-            text = todo.content,
-            modifier = Modifier.padding(8.dp),
-            fontSize = 16.sp
-        )
-    }
-    HorizontalDivider(thickness = 2.dp)
-}
-
 operator fun LocalDate.rangeTo(other: LocalDate): List<LocalDate> {
     return generateSequence(this) { it.plusDays(1) }
         .takeWhile { it <= other }
@@ -377,6 +359,29 @@ private val CalendarLayoutInfo.completelyVisibleMonths: List<CalendarMonth>
             visibleItemsInfo.map { it.month }
         }
     }
+
+@Composable
+private fun LazyItemScope.TodoInformation(todo: ToDo) {
+    Row(
+        modifier = Modifier
+            .fillParentMaxWidth()
+            .height(IntrinsicSize.Max),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = todo.content,
+            modifier = Modifier.padding(8.dp),
+            fontSize = 16.sp
+        )
+        Text(
+            text = todo.endTime?.toString() ?: "No end date",
+            modifier = Modifier.padding(8.dp),
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+    }
+    HorizontalDivider(thickness = 2.dp)
+}
 
 @Composable
 fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarMonth {

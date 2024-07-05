@@ -24,14 +24,14 @@ class CategoryViewModel : ViewModel() {
         }
     }
 
-    fun updateCategory(name: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            categoryDao.update(Category(name = name))
+    fun updateCategory(id:Int,name:String){
+        viewModelScope.launch (Dispatchers.IO) {
+            categoryDao.update(Category(id = id, name = name))
         }
     }
 
-    fun deleteCategory(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun deleteCategory(id:Int){
+        viewModelScope.launch (Dispatchers.IO){
             categoryDao.delete(id)
         }
     }

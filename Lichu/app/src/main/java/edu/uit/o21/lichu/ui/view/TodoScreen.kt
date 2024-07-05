@@ -1,6 +1,7 @@
 package edu.uit.o21.lichu.ui.view
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -23,16 +24,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +51,7 @@ import edu.uit.o21.lichu.ui.MyApp
 import edu.uit.o21.lichu.ui.theme.LichuTheme
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 import edu.uit.o21.lichu.viewmodel.ToDoViewModel
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -90,7 +84,6 @@ fun TodolistScreen(navController:NavController) {
 fun CategoryItems(item: Category,navController:NavController) {
     val toDoViewModel:ToDoViewModel = viewModel()
     val toDoList by toDoViewModel.todoList(item.id).observeAsState(emptyList())
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +92,10 @@ fun CategoryItems(item: Category,navController:NavController) {
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
-                navController.navigate("CategoryOnclickScreen")
+                val categoryId = Uri.encode(item.id.toString())
+                val categoryName = Uri.encode(item.name)
+                val route = "CategoryOnclickScreen/$categoryId/$categoryName"
+                navController.navigate(route)
             }
     ) {
         Text(
@@ -123,20 +119,20 @@ fun CategoryItems(item: Category,navController:NavController) {
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 if(todo.endTime!=null){
-                    val daysBetween = ChronoUnit.DAYS.between(todo.startTime, todo.endTime)
+                    val curDay= LocalDate.now()
+                    val daysBetween = ChronoUnit.DAYS.between(curDay, todo.endTime)
                     val monthsBetween = daysBetween / 30
                     val yearsBetween = monthsBetween / 12
                     if (yearsBetween != 0L) {
                         val yearsText = buildString {
                             append("$yearsBetween ")
-                            append(if (yearsBetween < 1) "years" else "year")
+                            append(if (yearsBetween > 1) "years" else "year")
                             if ((monthsBetween % 12).toInt() !=0) {
                                 append("+")
                             }
                         }
                         Text(text = yearsText)
-                    }
-                    else if (monthsBetween != 0L) {
+                    } else if (monthsBetween != 0L) {
                         val monthText = buildString {
                             append("$monthsBetween ")
                             append(if (monthsBetween > 1) "months" else "month")
@@ -145,15 +141,13 @@ fun CategoryItems(item: Category,navController:NavController) {
                             }
                         }
                         Text(text = monthText)
-                    }
-                    else if (daysBetween != 0L) {
-                        val daysText =  if (daysBetween > 1) "$daysBetween days"
-                                        else "$daysBetween day"
+                    } else if (daysBetween > 0L) {
+                        val daysText =
+                            if (daysBetween > 1) "$daysBetween days"
+                            else "$daysBetween day"
                         Text(text = daysText)
-                    }
-                    else {
-                        Text(text = "Due")
-                    }
+                    } else if (daysBetween == 0L) Text(text = "Due today")
+                    else Text(text = "Due")
                 }
             }
             count++

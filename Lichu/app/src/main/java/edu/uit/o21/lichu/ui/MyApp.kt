@@ -27,24 +27,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import edu.uit.o21.lichu.ui.view.AddCategoryScreen
-import edu.uit.o21.lichu.ui.view.AddTodoScreen
+import edu.uit.o21.lichu.ui.view.TodoFeatureScreen
 import edu.uit.o21.lichu.ui.view.CalendarScreen
 import edu.uit.o21.lichu.ui.view.CategoryOnclickScreen
 import edu.uit.o21.lichu.ui.view.TodolistScreen
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
+import edu.uit.o21.lichu.viewmodel.ToDoViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
+    val todoViewModel: ToDoViewModel = viewModel()
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     val shouldShowBottomBarAndFab = currentDestination in listOf("ToDoScreen", "CalendarScreen")
+
     Scaffold(
         bottomBar = { if (shouldShowBottomBarAndFab) Navigation(navController) },
         floatingActionButton = { if (shouldShowBottomBarAndFab) FloatingButton(navController) }
@@ -58,9 +63,28 @@ fun MyApp() {
                 composable("ToDoScreen") { TodolistScreen(navController) }
                 composable("CalendarScreen") { CalendarScreen() }
             }
-            composable("AddCategoryScreen") { AddCategoryScreen(navController) }
-            composable("AddTodoScreen") { AddTodoScreen(navController) }
-            composable("CategoryOnclickScreen") { CategoryOnclickScreen(navController) }
+            composable("AddCategoryScreen") {  AddCategoryScreen(navController) }
+            composable("AddTodoScreen") { TodoFeatureScreen(navController) }
+            composable("EditTodoScreen/{todo_id}") { backStackEntry ->
+                val todoId = backStackEntry.arguments?.getString("todo_id")?.toInt()
+                val todo = todoId?.let { todoViewModel.todoById(it).observeAsState().value }
+                if (todo != null) {
+                    TodoFeatureScreen(navController, isEdit = true,initialTodo = todo)
+                }
+            }
+            composable(
+                route = "CategoryOnclickScreen/{category_id}/{category_name}",
+                arguments = listOf(
+                    navArgument("category_id") { type = NavType.IntType },
+                    navArgument("category_name") { type = NavType.StringType },
+                )
+            ) { backStackEntry ->
+                val arguments = requireNotNull(backStackEntry.arguments)
+                val categoryId = arguments.getInt("category_id")
+                val categoryName = arguments.getString("category_name") ?: error("Missing name")
+
+                CategoryOnclickScreen(navController = navController, categoryId = categoryId ,categoryName=categoryName)
+            }
         }
     }
 }
@@ -69,6 +93,7 @@ fun MyApp() {
 fun FloatingButton(navController: NavController){
     val categoryViewModel:CategoryViewModel = viewModel()
     val categoryList by categoryViewModel.categoryList.observeAsState(emptyList())
+
     var showMenu by remember { mutableStateOf(false) }
     Box {
         FloatingActionButton(

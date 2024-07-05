@@ -12,7 +12,7 @@ import java.time.LocalDate
     parentColumns = ["id"],
     childColumns = ["categoryId"],
     onDelete = ForeignKey.CASCADE
-)],
+    )],
     indices = [Index("categoryId")]
 )
 data class ToDo(

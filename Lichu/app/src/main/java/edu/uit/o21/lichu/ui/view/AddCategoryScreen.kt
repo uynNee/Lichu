@@ -88,15 +88,7 @@ fun AddCategoryScreen(navController: NavController) {
                         unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 )
-//                if (isEmpty) {
-//                    Text(
-//                        text = "Category name cannot be empty",
-//                        color = MaterialTheme.colorScheme.error,
-//                        style = MaterialTheme.typography.bodySmall,
-//                        modifier = Modifier.padding(bottom = 16.dp)
-//                    )
-//                } else
-                    if (isDuplicate.value) {
+                if (isDuplicate.value) {
                     Text(
                         text = "Category name already exists",
                         color = MaterialTheme.colorScheme.error,
