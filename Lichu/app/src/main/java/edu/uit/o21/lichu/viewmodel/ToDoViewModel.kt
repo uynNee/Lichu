@@ -1,12 +1,9 @@
 package edu.uit.o21.lichu.viewmodel
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.uit.o21.lichu.MainApplication
-import edu.uit.o21.lichu.data.dao.ToDoDao
 import edu.uit.o21.lichu.data.entity.ToDo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,11 +28,19 @@ class ToDoViewModel: ViewModel(){
             toDoViewModel.insert(ToDo(content=toDo.content, isDone = toDo.isDone, startTime = toDo.startTime, endTime = toDo.endTime, categoryId = toDo.categoryId))
         }
     }
+
     fun updateToDo(todo: ToDo){
         viewModelScope.launch (Dispatchers.IO){
             toDoViewModel.update(todo.id,todo.content,todo.endTime)
         }
     }
+
+    fun updateCheck(todo: ToDo){
+        viewModelScope.launch (Dispatchers.IO){
+            toDoViewModel.updateIsDone(todo.id, todo.isDone)
+        }
+    }
+
     fun deleteToDo(id:Int){
         viewModelScope.launch (Dispatchers.IO){
             toDoViewModel.delete(id)

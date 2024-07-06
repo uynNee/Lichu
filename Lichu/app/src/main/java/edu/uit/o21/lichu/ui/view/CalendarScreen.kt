@@ -14,15 +14,19 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -74,6 +78,7 @@ import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -89,6 +94,21 @@ fun CalendarScreen() {
     val todos by toDoViewModel.calendarTodoList().observeAsState(emptyList())
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val todoColors = listOf(
+        Color(0xFFC1C8E2),
+        Color(0xFFB2DECD),
+        Color(0xFFDAE8C4),
+        Color(0xFFF7D5BC),
+        Color(0xFFF6B2AF),
+        Color(0xFFF4979F)
+    )
+    val todoColorMapping = remember(todos) {
+        mutableMapOf<Int, Color>().apply {
+            todos.forEachIndexed { index, todo ->
+                this[todo.id] = todoColors[index % todoColors.size]
+            }
+        }
+    }
     val todosInSelectedDate = remember(selection, todos) {
         selection?.date?.let { selectedDate ->
             todos.filter { todo ->
@@ -97,6 +117,12 @@ fun CalendarScreen() {
                 endDate != null && (startDate <= selectedDate) && (endDate >= selectedDate)
             }
         }.orEmpty()
+    }
+    val (incompleteTodos, completeTodos) = remember(todosInSelectedDate) {
+        todosInSelectedDate.partition { !it.isDone }
+    }
+    val sortedTodosInSelectedDate = remember(incompleteTodos, completeTodos) {
+        incompleteTodos + completeTodos
     }
     LaunchedEffect(todosInSelectedDate) {
         openBottomSheet = todosInSelectedDate.isNotEmpty()
@@ -131,6 +157,11 @@ fun CalendarScreen() {
                         state.animateScrollToMonth(state.firstVisibleMonth.yearMonth.nextMonth)
                     }
                 },
+                goToToday = {
+                    coroutineScope.launch {
+                        state.animateScrollToMonth(YearMonth.now())
+                    }
+                }
             )
             HorizontalCalendar(
                 modifier = Modifier.wrapContentWidth(),
@@ -141,10 +172,13 @@ fun CalendarScreen() {
                             day = day,
                             isSelected = selection == day,
                             todos = todos.filter { todo ->
-                                val startDate = LocalDate.parse(todo.startTime.toString())
-                                val endDate = todo.endTime?.let { LocalDate.parse(it.toString()) }
-                                endDate != null && (startDate <= day.date) && (endDate >= day.date)
-                            }
+                                !todo.isDone && todo.run {
+                                    val startDate = LocalDate.parse(startTime.toString())
+                                    val endDate = endTime?.let { LocalDate.parse(it.toString()) }
+                                    endDate != null && (startDate <= day.date) && (endDate >= day.date)
+                                }
+                            },
+                            todoColorMapping = todoColorMapping
                         ) { clicked ->
                             selection = clicked
                             openBottomSheet = todosInSelectedDate.isNotEmpty()
@@ -168,16 +202,18 @@ fun CalendarScreen() {
         ) {
             Text(
                 text = "On going in: ${selection?.date}",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
                     .padding(bottom = 8.dp),
                 fontWeight = FontWeight.Bold,
             )
+            TodoInfoName()
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
             ) {
-                items(items = todosInSelectedDate) { todo ->
+                items(items = sortedTodosInSelectedDate) { todo ->
                     TodoInformation(todo)
                 }
             }
@@ -187,16 +223,51 @@ fun CalendarScreen() {
 }
 
 @Composable
+private fun LazyItemScope.TodoInformation(todo: ToDo) {
+    val toDoViewModel: ToDoViewModel = viewModel()
+    Row(
+        modifier = Modifier
+            .fillParentMaxWidth()
+            .height(IntrinsicSize.Max),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = todo.isDone,
+            onCheckedChange = { checked ->
+                toDoViewModel.updateCheck(todo.copy(isDone = checked))
+            },
+        )
+        Text(
+            text = todo.content,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp),
+            fontSize = 16.sp,
+            textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
+            color = if (todo.isDone) Color.Gray else Color.Unspecified
+        )
+        Text(
+            text = todo.endTime?.toString() ?: "No end date",
+            modifier = Modifier.padding(horizontal = 8.dp),
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
+    }
+    HorizontalDivider(thickness = 2.dp)
+}
+
+@Composable
 private fun Day(
     day: CalendarDay,
     isSelected: Boolean = false,
     todos: List<ToDo> = emptyList(),
+    todoColorMapping: Map<Int, Color>,
     onClick: (CalendarDay) -> Unit = {},
 ) {
     val maxVisibleTodos = 3
     val visibleTodos = todos.take(maxVisibleTodos)
     val moreTodosCount = todos.size - visibleTodos.size
-    val todoColors = listOf(Color(0xFFffd6ff), Color(0xFFc8b6ff), Color(0xFFbbd0ff), Color(0xFFa0c4ff))
     val dayState = remember(day) {
         mutableStateOf(day)
     }
@@ -228,8 +299,8 @@ private fun Day(
                 modifier = Modifier.padding(top = 2.dp),
                 text = dayState.value.date.dayOfMonth.toString(),
                 color = if (day.date == LocalDate.now()) MaterialTheme.colorScheme.onPrimaryContainer
-                        else if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.outline,
+                else if (day.position == DayPosition.MonthDate) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.outline,
                 fontSize = 12.sp,
                 textDecoration = if (day.date == LocalDate.now()) TextDecoration.Underline else null,
             )
@@ -240,12 +311,12 @@ private fun Day(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                visibleTodos.forEachIndexed { index, _ ->
+                visibleTodos.forEach { todo ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(10.dp)
-                            .background(color = todoColors[index % todoColors.size])
+                            .background(color = todoColorMapping[todo.id] ?: Color.Gray)
                     )
                     Spacer(modifier = Modifier.height(3.dp))
                 }
@@ -259,6 +330,30 @@ private fun Day(
             )
         }
     }
+}
+
+@Composable
+private fun TodoInfoName() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Max),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = "Task",
+            modifier = Modifier.padding(horizontal = 12.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Deadline",
+            modifier = Modifier.padding(horizontal = 12.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    HorizontalDivider(thickness = 3.dp)
 }
 
 @Composable
@@ -292,6 +387,7 @@ fun SimpleCalendarTitle(
     currentMonth: YearMonth,
     goToPrevious: () -> Unit,
     goToNext: () -> Unit,
+    goToToday: () -> Unit,
 ) {
     Row(
         modifier = modifier.height(40.dp),
@@ -302,11 +398,43 @@ fun SimpleCalendarTitle(
             contentDescription = "Previous",
             onClick = goToPrevious,
         )
+        Box(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .size(34.dp)
+                .clickable { goToToday() }
+                .padding(horizontal = 4.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row (verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = LocalDate.now().dayOfMonth.toString(),
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                Text(
+                    text = getOrdinalSuffix(LocalDate.now().dayOfMonth),
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 10.sp
+                    ),
+                    modifier = Modifier.padding(start = 2.dp)
+                )
+            }
+        }
         Text(
             modifier = Modifier
                 .weight(1f)
-                .testTag("MonthTitle"),
-            text = currentMonth.toString(),
+                .testTag("MonthTitle")
+                .offset(x = (-8).dp),
+            text = currentMonth.format(DateTimeFormatter.ofPattern("MMMM yyyy")),
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
@@ -334,11 +462,20 @@ private fun CalendarNavigationIcon(
     Icon(
         modifier = Modifier
             .fillMaxSize()
-            .padding(4.dp)
-            .align(Alignment.Center),
+            .padding(4.dp),
         imageVector = imageVector,
         contentDescription = contentDescription,
     )
+}
+
+private fun getOrdinalSuffix(day: Int): String {
+    return when {
+        day in 11..13 -> "th"
+        day % 10 == 1 -> "st"
+        day % 10 == 2 -> "nd"
+        day % 10 == 3 -> "rd"
+        else -> "th"
+    }
 }
 
 private val CalendarLayoutInfo.completelyVisibleMonths: List<CalendarMonth>
@@ -359,29 +496,6 @@ private val CalendarLayoutInfo.completelyVisibleMonths: List<CalendarMonth>
             visibleItemsInfo.map { it.month }
         }
     }
-
-@Composable
-private fun LazyItemScope.TodoInformation(todo: ToDo) {
-    Row(
-        modifier = Modifier
-            .fillParentMaxWidth()
-            .height(IntrinsicSize.Max),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = todo.content,
-            modifier = Modifier.padding(8.dp),
-            fontSize = 16.sp
-        )
-        Text(
-            text = todo.endTime?.toString() ?: "No end date",
-            modifier = Modifier.padding(8.dp),
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-    }
-    HorizontalDivider(thickness = 2.dp)
-}
 
 @Composable
 fun rememberFirstCompletelyVisibleMonth(state: CalendarState): CalendarMonth {

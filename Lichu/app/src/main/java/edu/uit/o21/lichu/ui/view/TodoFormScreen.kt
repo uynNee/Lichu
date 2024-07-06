@@ -273,6 +273,7 @@ fun DatePickerField(
             IconButton(onClick = { datePickerDialog.show() }) {
                 Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date")
             }
-        }
+        },
+        enabled = false
     )
 }

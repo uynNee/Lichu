@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Update
 import edu.uit.o21.lichu.data.entity.ToDo
 import java.time.LocalDate
 
@@ -13,7 +12,7 @@ interface ToDoDao {
     @Query("SELECT * FROM todo")
     fun calendarGetAll(): LiveData<List<ToDo>>
 
-    @Query("SELECT * FROM todo WHERE categoryId = :categoryId")
+    @Query("SELECT * FROM todo WHERE categoryId = :categoryId ORDER BY endTime ASC")
     fun getAll(categoryId:Int): LiveData<List<ToDo>>
 
     @Query("SELECT * FROM todo WHERE id=:todoId")
@@ -24,6 +23,9 @@ interface ToDoDao {
 
     @Query("UPDATE ToDo SET content = :content, endTime = :endTime WHERE id = :id")
     fun update(id: Int, content: String, endTime: LocalDate?)
+
+    @Query("UPDATE ToDo SET isDone = :isDone where id=:id")
+    fun updateIsDone(id:Int, isDone:Boolean)
 
     @Query("DELETE FROM todo WHERE id=:id")
     fun delete(id: Int)
