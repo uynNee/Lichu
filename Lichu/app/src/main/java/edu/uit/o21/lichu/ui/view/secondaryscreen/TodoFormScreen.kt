@@ -1,9 +1,11 @@
-package edu.uit.o21.lichu.ui.view
+package edu.uit.o21.lichu.ui.view.secondaryscreen
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,9 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -46,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import edu.uit.o21.lichu.data.entity.Category
 import edu.uit.o21.lichu.data.entity.ToDo
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 import edu.uit.o21.lichu.viewmodel.ToDoViewModel
@@ -57,11 +60,13 @@ import java.util.Calendar
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoFeatureScreen(
+fun TodoFormScreen(
     navController: NavController,
     todoViewModel: ToDoViewModel = viewModel(),
     categoryViewModel: CategoryViewModel = viewModel(),
     isEdit: Boolean = false,
+    isAddToDo: Boolean = false,
+    categoryId: Int? = null,
     initialTodo: ToDo? = null
 ) {
     var content by remember { mutableStateOf(initialTodo?.content ?: "") }
@@ -72,18 +77,15 @@ fun TodoFeatureScreen(
     var expanded by remember { mutableStateOf(false) }
     val categoryListState = categoryViewModel.categoryList.observeAsState(emptyList())
     val categoryList = categoryListState.value
-    var selectedCategory by remember(categoryList) {
-        mutableStateOf(
-            if (isEdit) categoryList.find { it.id == initialTodo?.categoryId }
-            else if (categoryList.isNotEmpty()) categoryList[0]
-            else null
-        )
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+    LaunchedEffect(categoryList) {
+        if (isEdit)
+            selectedCategory = categoryList.find { it.id == initialTodo?.categoryId }
+        if (isAddToDo)
+            selectedCategory = categoryList.find { it.id == categoryId }
     }
-    LaunchedEffect(categoryListState) {
-        if (!isEdit && categoryList.isNotEmpty()) {
-            selectedCategory = categoryList[0]
-        }
-    }
+
     val dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     var isContentEmpty by remember { mutableStateOf(content.isEmpty()) }
     Scaffold(
@@ -92,7 +94,10 @@ fun TodoFeatureScreen(
                 title = { Text(if (isEdit) "Edit Todo" else "Add Todo") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
@@ -113,12 +118,8 @@ fun TodoFeatureScreen(
             TextField(
                 value = content,
                 colors = TextFieldDefaults.colors(
-//                    focusedIndicatorColor = Color.Transparent,
-//                    unfocusedIndicatorColor = Color.Transparent,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedLabelColor = Color.Transparent,
-                    unfocusedLabelColor = Color.Transparent,
                     cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 onValueChange = {
@@ -131,11 +132,11 @@ fun TodoFeatureScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             DatePickerField(
-                label = "End Date",
                 selectedDate = endDate,
                 onDateSelected = {
                     endDate = it
-                    dateCheck = endDate!! >= currentDate
+                    dateCheck = it?.let { date -> date >= currentDate } ?: true
+                    println(dateCheck)
                 },
                 dateFormatter = dateFormatter
             )
@@ -144,30 +145,30 @@ fun TodoFeatureScreen(
                     text = "End date cannot be less than today",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(bottom = 16.dp).padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .padding(top = 8.dp)
                 )
             } else {
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            if(!isEdit){
+            if (!isEdit && !isAddToDo) {
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = !expanded }
                 ) {
-                    selectedCategory?.let {
-                        TextField(
-                            value = it.name,
-                            onValueChange = { },
-                            readOnly = true,
-                            label = { Text("Select Category") },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth()
-                        )
-                    }
+                    TextField(
+                        value = selectedCategory?.name ?: "Please select a category",
+                        onValueChange = { },
+                        readOnly = true,
+                        label = { Text("Select Category") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
                     ExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
@@ -198,6 +199,7 @@ fun TodoFeatureScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
                     onClick = {
+                        println(selectedCategory)
                         if (content.isNotEmpty() && dateCheck) {
                             selectedCategory?.let { category ->
                                 if (isEdit) {
@@ -208,6 +210,19 @@ fun TodoFeatureScreen(
                                             categoryId = category.id
                                         )
                                         todoViewModel.updateToDo(updatedTodo)
+                                    }
+                                } else if (isAddToDo) {
+                                    val newTodo = categoryId?.let {
+                                        ToDo(
+                                            content = content,
+                                            startTime = currentDate,
+                                            endTime = endDate,
+                                            isDone = false,
+                                            categoryId = it
+                                        )
+                                    }
+                                    if (newTodo != null) {
+                                        todoViewModel.addTodo(newTodo)
                                     }
                                 } else {
                                     val newTodo = ToDo(
@@ -224,7 +239,7 @@ fun TodoFeatureScreen(
                         }
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = content.isNotEmpty() && dateCheck
+                    enabled = content.isNotEmpty() && dateCheck && ((selectedCategory != null) || isEdit || isAddToDo)
                 ) {
                     Text("Confirm")
                 }
@@ -233,9 +248,9 @@ fun TodoFeatureScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DatePickerField(
-    label: String,
     selectedDate: LocalDate?,
     onDateSelected: (LocalDate?) -> Unit,
     dateFormatter: DateTimeFormatter
@@ -245,35 +260,58 @@ fun DatePickerField(
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
+
     val datePickerDialog = remember {
         DatePickerDialog(
             context,
             { _, selectedYear, selectedMonth, selectedDayOfMonth ->
                 onDateSelected(
-                    LocalDate.of(selectedYear,
-                    selectedMonth + 1,
-                    selectedDayOfMonth))
+                    LocalDate.of(selectedYear, selectedMonth + 1, selectedDayOfMonth)
+                )
             },
             year,
             month,
             day
         )
     }
-    OutlinedTextField(
-        value = selectedDate?.format(dateFormatter) ?: "",
-        onValueChange = { },
-        readOnly = true,
-        label = { Text(label) },
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = {
                 datePickerDialog.show()
-            }),
-        trailingIcon = {
-            IconButton(onClick = { datePickerDialog.show() }) {
-                Icon(imageVector = Icons.Default.DateRange, contentDescription = "Select Date")
+            })
+            .border(
+                BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                shape = RoundedCornerShape(4.dp)
+            )
+            .height(60.dp),
+
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        if (selectedDate != null) {
+            Text(
+                text = selectedDate.format(dateFormatter),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp, vertical = 18.dp)
+            )
+
+            IconButton(
+                onClick = {
+                    onDateSelected(null)
+                },
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear")
             }
-        },
-        enabled = false
-    )
+        } else {
+            Text(
+                text = "Select a date",
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+            )
+        }
+    }
 }

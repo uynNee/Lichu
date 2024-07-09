@@ -13,10 +13,10 @@ interface ToDoDao {
     fun calendarGetAll(): LiveData<List<ToDo>>
 
     @Query("SELECT * FROM todo WHERE categoryId = :categoryId ORDER BY endTime ASC")
-    fun getAll(categoryId:Int): LiveData<List<ToDo>>
+    fun getAll(categoryId: Int): LiveData<List<ToDo>>
 
     @Query("SELECT * FROM todo WHERE id=:todoId")
-    fun getToDoById(todoId:Int): LiveData<ToDo>
+    fun getToDoById(todoId: Int): LiveData<ToDo>
 
     @Insert
     fun insert(todo: ToDo)
@@ -25,7 +25,7 @@ interface ToDoDao {
     fun update(id: Int, content: String, endTime: LocalDate?)
 
     @Query("UPDATE ToDo SET isDone = :isDone where id=:id")
-    fun updateIsDone(id:Int, isDone:Boolean)
+    fun updateIsDone(id: Int, isDone: Boolean)
 
     @Query("DELETE FROM todo WHERE id=:id")
     fun delete(id: Int)

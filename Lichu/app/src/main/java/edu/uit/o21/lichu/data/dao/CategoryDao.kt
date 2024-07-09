@@ -12,21 +12,21 @@ interface CategoryDao {
     @Query("SELECT * FROM category")
     fun getAll(): LiveData<List<Category>>
 
+//    @Query("SELECT * FROM category WHERE name=:name")
+//    suspend fun getOne(name: String): Category?
+
     @Query("SELECT COUNT(*) > 0 FROM category WHERE name = :categoryName")
-    fun checkName(categoryName: String):LiveData<Boolean>
+    fun checkName(categoryName: String): LiveData<Boolean>
 
     @Insert
     fun insert(category: Category)
+
+    @Insert
+    fun insertGetId(category: Category): Long
 
     @Update
     fun update(category: Category)
 
     @Query("DELETE FROM category where id=:id")
-    fun delete(id:Int)
-//
-//    @Query("SELECT * FROM category WHERE name LIKE :name")
-//    fun findByName(name: String): Flow<List<Category>>
-//
-//    @Query("SELECT * FROM category WHERE id IN (:ids)")
-//    fun findById(ids: List<Int>): Flow<List<Category>>
+    fun delete(id: Int)
 }

@@ -8,14 +8,14 @@ import edu.uit.o21.lichu.data.entity.ToDo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ToDoViewModel: ViewModel(){
-    private val toDoViewModel=MainApplication.dbConnection.getTodoDao()
+class ToDoViewModel : ViewModel() {
+    private val toDoViewModel = MainApplication.dbConnection.getTodoDao()
 
     fun calendarTodoList(): LiveData<List<ToDo>> {
         return toDoViewModel.calendarGetAll()
     }
 
-    fun todoList(categoryId:Int): LiveData<List<ToDo>> {
+    fun todoList(categoryId: Int): LiveData<List<ToDo>> {
         return toDoViewModel.getAll(categoryId)
     }
 
@@ -23,26 +23,34 @@ class ToDoViewModel: ViewModel(){
         return toDoViewModel.getToDoById(todoId)
     }
 
-    fun addTodo(toDo: ToDo){
-        viewModelScope.launch (Dispatchers.IO){
-            toDoViewModel.insert(ToDo(content=toDo.content, isDone = toDo.isDone, startTime = toDo.startTime, endTime = toDo.endTime, categoryId = toDo.categoryId))
+    fun addTodo(toDo: ToDo) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoViewModel.insert(
+                ToDo(
+                    content = toDo.content,
+                    isDone = toDo.isDone,
+                    startTime = toDo.startTime,
+                    endTime = toDo.endTime,
+                    categoryId = toDo.categoryId
+                )
+            )
         }
     }
 
-    fun updateToDo(todo: ToDo){
-        viewModelScope.launch (Dispatchers.IO){
-            toDoViewModel.update(todo.id,todo.content,todo.endTime)
+    fun updateToDo(todo: ToDo) {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoViewModel.update(todo.id, todo.content, todo.endTime)
         }
     }
 
-    fun updateCheck(todo: ToDo){
-        viewModelScope.launch (Dispatchers.IO){
+    fun updateCheck(todo: ToDo) {
+        viewModelScope.launch(Dispatchers.IO) {
             toDoViewModel.updateIsDone(todo.id, todo.isDone)
         }
     }
 
-    fun deleteToDo(id:Int){
-        viewModelScope.launch (Dispatchers.IO){
+    fun deleteToDo(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
             toDoViewModel.delete(id)
         }
     }

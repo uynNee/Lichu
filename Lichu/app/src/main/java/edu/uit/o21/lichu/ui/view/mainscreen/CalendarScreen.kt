@@ -1,4 +1,4 @@
-package edu.uit.o21.lichu.ui.view
+package edu.uit.o21.lichu.ui.view.mainscreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -405,12 +404,12 @@ fun SimpleCalendarTitle(
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(4.dp)
                 )
-                .size(34.dp)
+                .height(32.dp)
                 .clickable { goToToday() }
                 .padding(horizontal = 4.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Row (verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = LocalDate.now().dayOfMonth.toString(),
                     style = androidx.compose.ui.text.TextStyle(

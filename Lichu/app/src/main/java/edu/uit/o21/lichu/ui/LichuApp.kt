@@ -34,17 +34,17 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import edu.uit.o21.lichu.ui.view.AddCategoryScreen
-import edu.uit.o21.lichu.ui.view.TodoFeatureScreen
-import edu.uit.o21.lichu.ui.view.CalendarScreen
-import edu.uit.o21.lichu.ui.view.CategoryOnclickScreen
-import edu.uit.o21.lichu.ui.view.TodolistScreen
+import edu.uit.o21.lichu.ui.view.mainscreen.CalendarScreen
+import edu.uit.o21.lichu.ui.view.mainscreen.TodolistScreen
+import edu.uit.o21.lichu.ui.view.secondaryscreen.AddCategoryScreen
+import edu.uit.o21.lichu.ui.view.secondaryscreen.CategoryOnclickScreen
+import edu.uit.o21.lichu.ui.view.secondaryscreen.TodoFormScreen
 import edu.uit.o21.lichu.viewmodel.CategoryViewModel
 import edu.uit.o21.lichu.viewmodel.ToDoViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MyApp() {
+fun Lichu() {
     val navController = rememberNavController()
     val todoViewModel: ToDoViewModel = viewModel()
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -63,13 +63,17 @@ fun MyApp() {
                 composable("ToDoScreen") { TodolistScreen(navController) }
                 composable("CalendarScreen") { CalendarScreen() }
             }
-            composable("AddCategoryScreen") {  AddCategoryScreen(navController) }
-            composable("AddTodoScreen") { TodoFeatureScreen(navController) }
+            composable("AddCategoryScreen") { AddCategoryScreen(navController) }
+            composable("AddTodoScreen") { TodoFormScreen(navController) }
+            composable("AddTodoWithCategoryIdScreen/{category_id}") { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getString("category_id")?.toInt()
+                TodoFormScreen(navController, isAddToDo = true, categoryId = categoryId)
+            }
             composable("EditTodoScreen/{todo_id}") { backStackEntry ->
                 val todoId = backStackEntry.arguments?.getString("todo_id")?.toInt()
                 val todo = todoId?.let { todoViewModel.todoById(it).observeAsState().value }
                 if (todo != null) {
-                    TodoFeatureScreen(navController, isEdit = true,initialTodo = todo)
+                    TodoFormScreen(navController, isEdit = true, initialTodo = todo)
                 }
             }
             composable(
@@ -83,15 +87,19 @@ fun MyApp() {
                 val categoryId = arguments.getInt("category_id")
                 val categoryName = arguments.getString("category_name") ?: error("Missing name")
 
-                CategoryOnclickScreen(navController = navController, categoryId = categoryId ,categoryName=categoryName)
+                CategoryOnclickScreen(
+                    navController = navController,
+                    categoryId = categoryId,
+                    categoryName = categoryName
+                )
             }
         }
     }
 }
 
 @Composable
-fun FloatingButton(navController: NavController){
-    val categoryViewModel:CategoryViewModel = viewModel()
+fun FloatingButton(navController: NavController) {
+    val categoryViewModel: CategoryViewModel = viewModel()
     val categoryList by categoryViewModel.categoryList.observeAsState(emptyList())
 
     var showMenu by remember { mutableStateOf(false) }
@@ -111,19 +119,26 @@ fun FloatingButton(navController: NavController){
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                onClick = {showMenu = false
+                onClick = {
+                    showMenu = false
                     navController.navigate("AddCategoryScreen")
-                          },
-                text = { Text(text = "Add List", color = MaterialTheme.colorScheme.onSecondary)}
+                },
+                text = {
+                    Text(
+                        text = "Add Category",
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
             )
             DropdownMenuItem(
-                onClick = { showMenu = false
-                    if(categoryList.isEmpty()){
+                onClick = {
+                    showMenu = false
+                    if (categoryList.isEmpty()) {
                         navController.navigate("AddCategoryScreen")
-                    }else
+                    } else
                         navController.navigate("AddTodoScreen")
-                          },
-                text = { Text(text = "Add Todo", color = MaterialTheme.colorScheme.onSecondary)}
+                },
+                text = { Text(text = "Add Todo", color = MaterialTheme.colorScheme.onSecondary) }
             )
         }
     }

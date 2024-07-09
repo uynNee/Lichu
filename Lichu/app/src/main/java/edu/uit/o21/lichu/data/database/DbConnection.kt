@@ -16,9 +16,10 @@ import edu.uit.o21.lichu.data.entity.ToDo
     exportSchema = false
 )
 abstract class DbConnection : RoomDatabase() {
-    companion object{
-        const val NAME="Lichu_DB"
+    companion object {
+        const val NAME = "Lichu_DB"
     }
+
     abstract fun getCategoryDao(): CategoryDao
     abstract fun getTodoDao(): ToDoDao
 }

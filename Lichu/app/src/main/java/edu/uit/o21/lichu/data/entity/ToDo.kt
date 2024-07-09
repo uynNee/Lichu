@@ -7,16 +7,17 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-@Entity(foreignKeys = [ForeignKey(
-    entity = Category::class,
-    parentColumns = ["id"],
-    childColumns = ["categoryId"],
-    onDelete = ForeignKey.CASCADE
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = Category::class,
+        parentColumns = ["id"],
+        childColumns = ["categoryId"],
+        onDelete = ForeignKey.CASCADE
     )],
     indices = [Index("categoryId")]
 )
 data class ToDo(
-    @PrimaryKey(autoGenerate = true) val id: Int=0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "isDone") var isDone: Boolean,
     @ColumnInfo(name = "startTime") val startTime: LocalDate,
