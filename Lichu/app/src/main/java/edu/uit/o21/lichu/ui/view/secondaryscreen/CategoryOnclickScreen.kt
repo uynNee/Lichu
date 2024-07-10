@@ -127,6 +127,17 @@ fun CategoryOnclickScreen(
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
+                    if (textFieldValue.text == "") {
+                        Toast.makeText(
+                            context,
+                            "Category's name cannot be empty",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        textFieldValue = TextFieldValue(
+                            categoryName,
+                            TextRange(categoryName.length)
+                        )
+                    }
                     if (textFieldValue.text != categoryName) {
                         if (categoryState.value == false) {
                             categoryViewModel.updateCategory(categoryId, textFieldValue.text)
@@ -182,6 +193,17 @@ fun CategoryOnclickScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
+                                    if (textFieldValue.text == "") {
+                                        Toast.makeText(
+                                            context,
+                                            "Category's name cannot be empty",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        textFieldValue = TextFieldValue(
+                                            categoryName,
+                                            TextRange(categoryName.length)
+                                        )
+                                    }
                                     if (categoryState.value == false) {
                                         categoryViewModel.updateCategory(
                                             categoryId,

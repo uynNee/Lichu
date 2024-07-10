@@ -19,15 +19,22 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("debug")
     }
     buildTypes {
         release {
-            isMinifyEnabled = false // Change to true when release
-//            isShrinkResources = true // Change to true when release
+            isDebuggable = false
+            isMinifyEnabled = true // Change to true when release
+            isShrinkResources = true // Change to true when release
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isDebuggable = true
+            isMinifyEnabled = false // Change to true when release
+            isShrinkResources = false // Change to true when release
         }
     }
     compileOptions {
