@@ -38,14 +38,15 @@ The primary purpose of this app is to help users manage their tasks and deadline
 ## Additional Dependencies Used in Lichu
 
 Lichu utilizes these dependencies:
-- **[AndroidX Room:](https://developer.android.com/jetpack/androidx/releases/room)** Persistence library for managing SQLite databases.
-- **[Compose Calendar and Kotlinx-Datetime:](https://github.com/kizitonwose/Calendar)** Libraries for integrating calendar functionality with Compose.
-- **[AndroidX UI Text Google Fonts:](https://developer.android.com/jetpack/androidx/releases/ui-text-google-fonts)** Provides access to Google Fonts.
-- **[AndroidX Lifecycle LiveData KTX:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** Kotlin extensions for LiveData.
-- **[AndroidX Navigation Compose:](https://developer.android.com/jetpack/androidx/releases/navigation)** Navigation component for Jetpack Compose.
-- **[AndroidX Runtime LiveData:](https://developer.android.com/jetpack/androidx/releases/runtime)** LiveData support for Compose runtime.
-- **[AndroidX Lifecycle ViewModel Compose:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** ViewModel support for Jetpack Compose.
-- **[ViewCalendar and ComposeCalendar:](https://github.com/kizitonwose/Calendar)** Libraries for calendar views in Jetpack Compose.
+- **[Kizito Nwose's Compose Calendar:](https://github.com/kizitonwose/Calendar)** Libraries for integrating calendar functionality with Jetpack Compose.
 - **[Desugar JDK Libraries:](https://developer.android.com/studio/write/java8-support#library-desugaring)** Provides support for Java 8+ APIs on lower API levels.
 - **[Accompanist Permissions:](https://google.github.io/accompanist/permissions/)** Utility library for handling Android permissions.
-- **[AndroidX Work:](https://developer.android.com/jetpack/androidx/releases/work)** Library for managing background work.
+
+AndroidX:
+- **[Room:](https://developer.android.com/jetpack/androidx/releases/room)** Persistence library for managing SQLite databases.
+- **[Google Fonts:](https://developer.android.com/reference/kotlin/androidx/compose/ui/text/googlefonts/package-summary.html)** Provides access to Google Fonts.
+- **[Lifecycle LiveData KTX:](https://developer.android.com/topic/libraries/architecture/livedata)** Kotlin extensions for LiveData.
+- **[Navigation Compose:](https://developer.android.com/jetpack/androidx/releases/navigation)** Navigation component for Jetpack Compose.
+- **[Runtime LiveData:](https://developer.android.com/jetpack/androidx/releases/compose-runtime)** LiveData support for Compose runtime.
+- **[Lifecycle ViewModel Compose:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** ViewModel support for Jetpack Compose.
+- **[Work Manager:](https://developer.android.com/jetpack/androidx/releases/work)** Library for managing background work.
