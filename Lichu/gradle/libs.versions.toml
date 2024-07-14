@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.0"
+agp = "8.5.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -17,6 +17,8 @@ viewCalendar = "2.5.2"
 composeCalendar = "2.5.2"
 desugarJdkLibs = "2.0.4"
 runtimeLivedata = "1.6.8"
+accompanist = "0.34.0"
+work = "2.9.0"
 
 [libraries]
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
@@ -44,6 +46,8 @@ viewCalendar = { module = "com.kizitonwose.calendar:view", version.ref = "viewCa
 composeCalendar = { module = "com.kizitonwose.calendar:compose", version.ref = "composeCalendar" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

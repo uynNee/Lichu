@@ -94,6 +94,10 @@ dependencies {
     implementation(libs.viewCalendar)
     implementation(libs.composeCalendar)
     coreLibraryDesugaring(libs.desugarJdkLibs)
+    //Accompanist
+    implementation(libs.accompanist.permissions)
+    //Work
+    implementation(libs.androidx.work)
 }
 kapt {
     correctErrorTypes = true

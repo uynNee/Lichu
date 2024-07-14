@@ -128,11 +128,13 @@ fun CategoryOnclickScreen(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                     if (textFieldValue.text == "") {
-                        Toast.makeText(
-                            context,
-                            "Category's name cannot be empty",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast
+                            .makeText(
+                                context,
+                                "Category's name cannot be empty",
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
                         textFieldValue = TextFieldValue(
                             categoryName,
                             TextRange(categoryName.length)
