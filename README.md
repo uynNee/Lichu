@@ -1,13 +1,51 @@
 # Lichu
-Lichu is a user-friendly todo list app built entirely with Kotlin and Jetpack Compose for Android. It helps you stay organized by categorizing tasks, setting deadlines, and viewing them on a calendar.
+Lichu is a task management and calendar application designed to help users organize their tasks and deadlines efficiently.
 
-Key Features:
-- **Organize Tasks:** Categorize todos for better organization.
-- **Set Deadlines:** Easily manage task deadlines.
-- **Calendar View:** See tasks and deadlines at a glance.
-- **Manage Categories and Tasks:** Add, edit, and delete tasks and categories effortlessly.
-- **Search:** Find tasks and categories quickly with search functionality.
+### Core Features:
+
+1. **Task Management:**
+   - Users can create, edit, and delete tasks.
+   - Each task has attributes such as content, start time, end time (deadline), completion status, and a category association.
+
+2. **Category Management:**
+   - Tasks can be categorized for better organization.
+   - Users can create, edit, and delete categories.
+   - Categories help in filtering tasks, making it easier for users to focus on specific areas of their life or work.
+
+3. **Calendar Integration:**
+   - The app includes a calendar view, allowing users to visualize their tasks on a calendar.
+   - Users can see tasks that are due on specific dates, providing a clear overview of upcoming deadlines.
+
+4. **Notifications:**
+   - The app features a notification system that alerts users about upcoming task deadlines.
+   - Notifications are customizable based on the task's deadline, such as notifications for tasks due today, tomorrow, or in three days.
+
+5. **Data Persistence:**
+   - The app uses Room Database for data persistence, ensuring that tasks and categories are saved locally on the device.
+   - A `Converter` class is used to handle the conversion of `LocalDate` objects to and from the database.
+
+6. **User Interface:**
+   - The app employs Material Design components and Compose UI toolkit for a modern and responsive user interface.
+   - Features like navigation bars, floating action buttons, and dropdown menus enhance user interaction.
+
+7. **Background Work:**
+   - A `DeadlineWorker` class is used to periodically check for task deadlines in the background, ensuring users are notified even when the app is not actively in use.
+
+### Purpose:
+
+The primary purpose of this app is to help users manage their tasks and deadlines more effectively. By providing a clear overview of upcoming tasks, categorizing tasks for better organization, and alerting users about approaching deadlines, the app aims to enhance productivity and ensure that users can stay on top of their responsibilities. The integration of a calendar view and the use of notifications are particularly useful for users who have a busy schedule and need a reliable way to manage their time and tasks.
+
 ## Additional Dependencies Used in Lichu
+
 Lichu utilizes these dependencies:
 - **[AndroidX Room:](https://developer.android.com/jetpack/androidx/releases/room)** Persistence library for managing SQLite databases.
-- **[Compose Calendar and Kotlinx-Datetime](https://github.com/kizitonwose/Calendar):** Libraries for integrating calendar functionality with Compose.
+- **[Compose Calendar and Kotlinx-Datetime:](https://github.com/kizitonwose/Calendar)** Libraries for integrating calendar functionality with Compose.
+- **[AndroidX UI Text Google Fonts:](https://developer.android.com/jetpack/androidx/releases/ui-text-google-fonts)** Provides access to Google Fonts.
+- **[AndroidX Lifecycle LiveData KTX:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** Kotlin extensions for LiveData.
+- **[AndroidX Navigation Compose:](https://developer.android.com/jetpack/androidx/releases/navigation)** Navigation component for Jetpack Compose.
+- **[AndroidX Runtime LiveData:](https://developer.android.com/jetpack/androidx/releases/runtime)** LiveData support for Compose runtime.
+- **[AndroidX Lifecycle ViewModel Compose:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** ViewModel support for Jetpack Compose.
+- **[ViewCalendar and ComposeCalendar:](https://github.com/kizitonwose/Calendar)** Libraries for calendar views in Jetpack Compose.
+- **[Desugar JDK Libraries:](https://developer.android.com/studio/write/java8-support#library-desugaring)** Provides support for Java 8+ APIs on lower API levels.
+- **[Accompanist Permissions:](https://google.github.io/accompanist/permissions/)** Utility library for handling Android permissions.
+- **[AndroidX Work:](https://developer.android.com/jetpack/androidx/releases/work)** Library for managing background work.
