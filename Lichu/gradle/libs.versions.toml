@@ -17,7 +17,7 @@ viewCalendar = "2.5.2"
 composeCalendar = "2.5.2"
 desugarJdkLibs = "2.0.4"
 runtimeLivedata = "1.6.8"
-accompanist = "0.34.0"
+accompanist = "0.35.1-alpha"
 work = "2.9.0"
 
 [libraries]

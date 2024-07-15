@@ -65,7 +65,6 @@ fun AddCategoryScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp),
-//                verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -122,7 +121,9 @@ fun AddCategoryScreen(navController: NavController) {
                             categoryViewModel.addCategoryGetId(categoryName).observe(
                                 lifecycleOwner
                             ) { id ->
-                                navController.navigate("CategoryOnclickScreen/$id/$categoryName")
+                                navController.navigate("CategoryOnclickScreen/$id/$categoryName") {
+                                    popUpTo("ToDoScreen") { inclusive = false }
+                                }
                             }
                         }
                     },

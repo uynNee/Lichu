@@ -136,7 +136,6 @@ fun TodoFormScreen(
                 onDateSelected = {
                     endDate = it
                     dateCheck = it?.let { date -> date >= currentDate } ?: true
-                    println(dateCheck)
                 },
                 dateFormatter = dateFormatter
             )
@@ -199,7 +198,6 @@ fun TodoFormScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
                     onClick = {
-                        println(selectedCategory)
                         if (content.isNotEmpty() && dateCheck) {
                             selectedCategory?.let { category ->
                                 if (isEdit) {

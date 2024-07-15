@@ -80,6 +80,7 @@ fun CategoryOnclickScreen(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var showDialog by remember { mutableStateOf(false) }
+    var currentCategoryName by remember { mutableStateOf(categoryName) }
     var textFieldValue by remember {
         mutableStateOf(
             TextFieldValue(
@@ -139,10 +140,10 @@ fun CategoryOnclickScreen(
                             categoryName,
                             TextRange(categoryName.length)
                         )
-                    }
-                    if (textFieldValue.text != categoryName) {
+                    } else if (textFieldValue.text != currentCategoryName) {
                         if (categoryState.value == false) {
                             categoryViewModel.updateCategory(categoryId, textFieldValue.text)
+                            currentCategoryName = textFieldValue.text // Update currentCategoryName here
                             Toast
                                 .makeText(
                                     context,
@@ -205,24 +206,27 @@ fun CategoryOnclickScreen(
                                             categoryName,
                                             TextRange(categoryName.length)
                                         )
-                                    }
-                                    if (categoryState.value == false) {
-                                        categoryViewModel.updateCategory(
-                                            categoryId,
-                                            textFieldValue.text
-                                        )
-                                        Toast.makeText(
-                                            context,
-                                            "Successfully changed category's name",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        textFieldValue = temp
-                                        Toast.makeText(
-                                            context,
-                                            "This category's name is duplicated",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                    } else if (textFieldValue.text != currentCategoryName) {
+                                        if (categoryState.value == false) {
+                                            categoryViewModel.updateCategory(categoryId, textFieldValue.text)
+                                            currentCategoryName = textFieldValue.text
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    "Successfully changed category's name",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
+                                        } else {
+                                            textFieldValue = temp
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    "This category's name is duplicated",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                .show()
+                                        }
                                     }
                                     keyboardController?.hide()
                                     focusManager.clearFocus()

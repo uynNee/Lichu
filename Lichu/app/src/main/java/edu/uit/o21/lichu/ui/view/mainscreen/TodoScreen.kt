@@ -228,7 +228,6 @@ fun CategoryItems(
         for (todo in toDosList) {
             var isChecked by remember(todo.id) { mutableStateOf(todo.isDone) }
             var visible by rememberSaveable { mutableStateOf(true) }
-            println(isChecked)
             val lineAnimationProgress by animateFloatAsState(
                 targetValue = if (isChecked) 1f else 0f,
                 animationSpec = tween(durationMillis = 500), label = "slideAnimation"

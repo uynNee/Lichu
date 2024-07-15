@@ -10,9 +10,8 @@ import androidx.room.Room
 import edu.uit.o21.lichu.data.database.DbConnection
 import edu.uit.o21.lichu.ui.NOTIFICATION_CHANNEL_ID
 import edu.uit.o21.lichu.ui.NOTIFICATION_CHANNEL_NAME
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainApplication : Application() {
     companion object {
@@ -32,7 +31,7 @@ class MainApplication : Application() {
             NotificationManager.IMPORTANCE_HIGH
         )
         notificationManager.createNotificationChannel(notificationChannel)
-        CoroutineScope(Dispatchers.IO).launch {
+        runBlocking(Dispatchers.IO) {
             dbConnection = Room.databaseBuilder(
                 applicationContext,
                 DbConnection::class.java,
