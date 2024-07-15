@@ -9,7 +9,7 @@ lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
 room = "2.6.1"
-ksp = "2.0.0-1.0.22"
+ksp = "2.0.0-1.0.23"
 uiTextGoogleFonts = "1.6.8"
 lifecycleLivedataKtx = "2.8.3"
 navigationCompose = "2.7.7"
@@ -17,8 +17,6 @@ viewCalendar = "2.5.2"
 composeCalendar = "2.5.2"
 desugarJdkLibs = "2.0.4"
 runtimeLivedata = "1.6.8"
-accompanist = "0.35.1-alpha"
-work = "2.9.0"
 
 [libraries]
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
@@ -46,8 +44,6 @@ viewCalendar = { module = "com.kizitonwose.calendar:view", version.ref = "viewCa
 composeCalendar = { module = "com.kizitonwose.calendar:compose", version.ref = "composeCalendar" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
-androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -10,9 +10,6 @@ import java.time.LocalDate
 @Dao
 interface ToDoDao {
     @Query("SELECT * FROM todo")
-    fun getAllToDo(): List<ToDo>
-
-    @Query("SELECT * FROM todo")
     fun calendarGetAll(): LiveData<List<ToDo>>
 
     @Query("SELECT * FROM todo WHERE categoryId = :categoryId ORDER BY endTime ASC")

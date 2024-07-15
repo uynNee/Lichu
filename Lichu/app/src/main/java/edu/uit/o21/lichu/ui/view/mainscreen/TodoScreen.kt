@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -52,7 +53,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -175,7 +175,7 @@ fun CategoryItems(
     }
     LaunchedEffect(toDoListState) {
         toDoList.clear()
-        toDoList.addAll(toDoListState)
+        toDoList.addAll(toDoListState.filter { !it.isDone })
     }
     val lineColor = MaterialTheme.colorScheme.primary
     Column(
@@ -227,21 +227,17 @@ fun CategoryItems(
         Spacer(modifier = Modifier.height(8.dp))
         for (todo in toDosList) {
             var isChecked by remember(todo.id) { mutableStateOf(todo.isDone) }
-            var visible by rememberSaveable { mutableStateOf(true) }
             val lineAnimationProgress by animateFloatAsState(
                 targetValue = if (isChecked) 1f else 0f,
-                animationSpec = tween(durationMillis = 500), label = "slideAnimation"
+                animationSpec = if (isChecked) tween(durationMillis = 500) else snap(),
+                label = "slideAnimation"
             )
             LaunchedEffect(isChecked) {
                 if (isChecked) {
                     delay(700)
-                    visible = false
-                }
-                if (!isChecked) {
-                    visible = true
+                    toDoViewModel.updateCheck(todo.copy(isDone = true))
                 }
             }
-            if (!visible) continue
             if (count == cap) continue
             count++
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -258,8 +254,6 @@ fun CategoryItems(
                                 checked = isChecked,
                                 onCheckedChange = { checked ->
                                     isChecked = checked
-                                    val updatedTodo = todo.copy(isDone = checked)
-                                    toDoViewModel.updateCheck(updatedTodo)
                                 }
                             )
                             Text(
@@ -439,7 +433,6 @@ fun CustomSearchBar(
                             innerTextField()
                         }
                     )
-
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { onSearchQueryChange("") }) {
                             Icon(

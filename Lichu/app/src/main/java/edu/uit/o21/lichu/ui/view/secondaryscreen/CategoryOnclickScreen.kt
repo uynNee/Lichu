@@ -143,7 +143,8 @@ fun CategoryOnclickScreen(
                     } else if (textFieldValue.text != currentCategoryName) {
                         if (categoryState.value == false) {
                             categoryViewModel.updateCategory(categoryId, textFieldValue.text)
-                            currentCategoryName = textFieldValue.text // Update currentCategoryName here
+                            currentCategoryName =
+                                textFieldValue.text // Update currentCategoryName here
                             Toast
                                 .makeText(
                                     context,
@@ -208,7 +209,10 @@ fun CategoryOnclickScreen(
                                         )
                                     } else if (textFieldValue.text != currentCategoryName) {
                                         if (categoryState.value == false) {
-                                            categoryViewModel.updateCategory(categoryId, textFieldValue.text)
+                                            categoryViewModel.updateCategory(
+                                                categoryId,
+                                                textFieldValue.text
+                                            )
                                             currentCategoryName = textFieldValue.text
                                             Toast
                                                 .makeText(

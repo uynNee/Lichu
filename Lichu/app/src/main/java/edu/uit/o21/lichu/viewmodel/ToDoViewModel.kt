@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.uit.o21.lichu.MainApplication
 import edu.uit.o21.lichu.data.entity.ToDo
-import edu.uit.o21.lichu.ui.NotificationService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class ToDoViewModel : ViewModel() {
     private val toDoViewModel = MainApplication.dbConnection.getTodoDao()

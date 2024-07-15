@@ -12,9 +12,6 @@ interface CategoryDao {
     @Query("SELECT * FROM category")
     fun getAll(): LiveData<List<Category>>
 
-//    @Query("SELECT * FROM category WHERE name=:name")
-//    suspend fun getOne(name: String): Category?
-
     @Query("SELECT COUNT(*) > 0 FROM category WHERE name = :categoryName")
     fun checkName(categoryName: String): LiveData<Boolean>
 

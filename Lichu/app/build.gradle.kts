@@ -24,8 +24,8 @@ android {
     buildTypes {
         release {
             isDebuggable = false
-            isMinifyEnabled = true // Change to true when release
-            isShrinkResources = true // Change to true when release
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -33,8 +33,8 @@ android {
         }
         debug {
             isDebuggable = true
-            isMinifyEnabled = false // Change to true when release
-            isShrinkResources = false // Change to true when release
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
     compileOptions {
@@ -94,10 +94,6 @@ dependencies {
     implementation(libs.viewCalendar)
     implementation(libs.composeCalendar)
     coreLibraryDesugaring(libs.desugarJdkLibs)
-    //Accompanist
-    implementation(libs.accompanist.permissions)
-    //Work
-    implementation(libs.androidx.work)
 }
 kapt {
     correctErrorTypes = true
