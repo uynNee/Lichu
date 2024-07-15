@@ -16,20 +16,13 @@ Lichu is a task management and calendar application designed to help users organ
    - The app includes a calendar view, allowing users to visualize their tasks on a calendar.
    - Users can see tasks that are due on specific dates, providing a clear overview of upcoming deadlines.
 
-4. **Notifications:**
-   - The app features a notification system that alerts users about upcoming task deadlines.
-   - Notifications are customizable based on the task's deadline, such as notifications for tasks due today, tomorrow, or in three days.
-
-5. **Data Persistence:**
+4. **Data Persistence:**
    - The app uses Room Database for data persistence, ensuring that tasks and categories are saved locally on the device.
    - A `Converter` class is used to handle the conversion of `LocalDate` objects to and from the database.
 
-6. **User Interface:**
+5. **User Interface:**
    - The app employs Material Design components and Compose UI toolkit for a modern and responsive user interface.
    - Features like navigation bars, floating action buttons, and dropdown menus enhance user interaction.
-
-7. **Background Work:**
-   - A `DeadlineWorker` class is used to periodically check for task deadlines in the background, ensuring users are notified even when the app is not actively in use.
 
 ### Purpose:
 
@@ -40,7 +33,6 @@ The primary purpose of this app is to help users manage their tasks and deadline
 Lichu utilizes these dependencies:
 - **[Kizito Nwose's Compose Calendar:](https://github.com/kizitonwose/Calendar)** Libraries for integrating calendar functionality with Jetpack Compose.
 - **[Desugar JDK Libraries:](https://developer.android.com/studio/write/java8-support#library-desugaring)** Provides support for Java 8+ APIs on lower API levels.
-- **[Accompanist Permissions:](https://google.github.io/accompanist/permissions/)** Utility library for handling Android permissions.
 
 AndroidX:
 - **[Room:](https://developer.android.com/jetpack/androidx/releases/room)** Persistence library for managing SQLite databases.
@@ -49,4 +41,3 @@ AndroidX:
 - **[Navigation Compose:](https://developer.android.com/jetpack/androidx/releases/navigation)** Navigation component for Jetpack Compose.
 - **[Runtime LiveData:](https://developer.android.com/jetpack/androidx/releases/compose-runtime)** LiveData support for Compose runtime.
 - **[Lifecycle ViewModel Compose:](https://developer.android.com/jetpack/androidx/releases/lifecycle)** ViewModel support for Jetpack Compose.
-- **[Work Manager:](https://developer.android.com/jetpack/androidx/releases/work)** Library for managing background work.
