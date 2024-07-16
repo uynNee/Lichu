@@ -26,7 +26,7 @@ Lichu is a task management and calendar application designed to help users organ
 
 ### Purpose:
 
-The primary purpose of this app is to help users manage their tasks and deadlines more effectively. By providing a clear overview of upcoming tasks, categorizing tasks for better organization, and alerting users about approaching deadlines, the app aims to enhance productivity and ensure that users can stay on top of their responsibilities. The integration of a calendar view and the use of notifications are particularly useful for users who have a busy schedule and need a reliable way to manage their time and tasks.
+The primary purpose of this app is to help users manage their tasks and deadlines more effectively. By providing a clear overview of upcoming tasks, categorizing tasks for better organization, and visualizing for users about current deadlines, the app aims to enhance productivity and ensure that users can stay on top of their responsibilities. The integration of a calendar view and the use of notifications are particularly useful for users who have a busy schedule and need a reliable way to manage their time and tasks.
 
 ## Additional Dependencies Used in Lichu
 
