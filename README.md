@@ -1,6 +1,8 @@
 # Lichu
 Lichu is a task management and calendar application designed to help users organize their tasks and deadlines efficiently.
 
+![Screenshots](https://github.com/uynNee/Lichu/blob/main/Screenshots.png)
+
 ### Core Features:
 
 1. **Task Management:**
